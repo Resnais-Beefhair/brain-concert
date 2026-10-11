@@ -1,0 +1,41 @@
+{
+  "name": "brain-concert",
+  "version": "2.5.1",
+  "private": true,
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Resnais-Beefhair/brain-concert.git"
+  },
+  "homepage": "https://github.com/Resnais-Beefhair/brain-concert#readme",
+  "bugs": {
+    "url": "https://github.com/Resnais-Beefhair/brain-concert/issues"
+  },
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host 127.0.0.1",
+    "build": "tsc && vite build --base=./",
+    "test": "vitest run",
+    "data:fetch": "node tools/fetch-data.mjs",
+    "data:verify": "node tools/fetch-data.mjs --verify-only",
+    "test:browser": "node tools/browser-review.mjs",
+    "test:gpu": "tsx tools/make-reference.ts && node tools/gpu-test.mjs && node tools/gpu-validation.mjs",
+    "test:data": "node tools/test-data-setup.mjs"
+  },
+  "dependencies": {
+    "@noble/hashes": "^2.4.0",
+    "three": "^0.180.0"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.55.0",
+    "@types/three": "^0.180.0",
+    "tsx": "^4.23.15",
+    "typescript": "^5.9.0",
+    "vite": "^7.1.0",
+    "vitest": "^4.1.11"
+  },
+  "description": "A browser-based fruit fly connectome simulation, visualization and sonification",
+  "engines": {
+    "node": ">=22.12.0"
+  }
+}

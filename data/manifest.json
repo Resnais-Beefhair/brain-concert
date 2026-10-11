@@ -1,0 +1,66 @@
+{
+  "schemaVersion": 2,
+  "dataset": "FlyWire v783",
+  "neurons": 138639,
+  "edgeRows": 15091983,
+  "synapses": 54492922,
+  "nonzeroEdgeRows": 15091983,
+  "positionedNeurons": 138639,
+  "unpositionedIds": [],
+  "inputCounts": {
+    "taste": 20,
+    "vibration": 145,
+    "light": 10855,
+    "scent": 2279
+  },
+  "sourceCommit": "91bdd1e7dcf193f3e7ca5a8933497fcef63b7960",
+  "sourceHash": "efeb23fb99098e9c390f6869969b2a121a2ee92c833cfc45ecb2c1d8e1af0347",
+  "anatomicalTransform": {
+    "centerMicrometres": [
+      495.252,
+      247.12400000000002,
+      139.68
+    ],
+    "scale": 0.36798257234537374,
+    "axisSigns": [
+      1,
+      -1,
+      -1
+    ]
+  },
+  "weights": "Exact signed integer synapse counts, multiplied by 0.275 mV at delivery",
+  "files": {
+    "offsets.bin": {
+      "bytes": 554560,
+      "sha256": "5eed7ce53ee0aabecb0c4636f95691e4cadb51925dbe1bdd3bef9aca4a32a154"
+    },
+    "weights.bin": {
+      "bytes": 60367932,
+      "sha256": "2d30bb197223a4ec6a602bfa91decc81c89e31138448dba47935bb7ab3d8484e"
+    },
+    "positions.bin": {
+      "bytes": 2218224,
+      "sha256": "09565ac02dca83fe209940ffa05afa47632f8ac9a5dacf976513ecf3743cd854"
+    },
+    "targets.bin": {
+      "bytes": 60367932,
+      "sha256": "302786e9dacecf6f04683f7e46a6c3aa223b136b42b44880ccae0f0487dcd5f3"
+    },
+    "inputs.bin": {
+      "bytes": 554556,
+      "sha256": "bcd55f12a47c3a2d626662bb750290bed48f36b609deaf51e80aef1d9a09e3b8"
+    },
+    "metadata.json": {
+      "bytes": 8211560,
+      "sha256": "3f4b01bec0a5cd15dbf8a52205895146901d896660e0e750769e48160caf83d5"
+    }
+  },
+  "totalBytes": 132274764,
+  "model": "LIF dt=0.2ms; WebGPU float32 state; integer atomic synaptic accumulation; deterministic Bernoulli external input",
+  "annotationSource": {
+    "doi": "10.1038/s41586-024-07686-5",
+    "file": "41586_2024_7686_MOESM5_ESM.tsv",
+    "license": "CC BY 4.0",
+    "sha256": "30be6c73975a70c56d930e27911f36455d3886e15abf383b78edd2a5d679e0b6"
+  }
+}

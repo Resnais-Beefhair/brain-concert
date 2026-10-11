@@ -1,0 +1,24 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "strict": true,
+    "lib": [
+      "ES2022",
+      "DOM",
+      "WebWorker",
+      "DOM.Iterable"
+    ],
+    "skipLibCheck": true,
+    "noEmit": true,
+    "allowImportingTsExtensions": true,
+    "types": [
+      "vite/client"
+    ]
+  },
+  "include": [
+    "src",
+    "tests"
+  ]
+}
