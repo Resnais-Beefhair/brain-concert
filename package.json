@@ -1,6 +1,6 @@
 {
   "name": "brain-concert",
-  "version": "2.5.1",
+  "version": "2.6.0",
   "private": true,
   "license": "MIT",
   "repository": {
@@ -20,22 +20,33 @@
     "data:verify": "node tools/fetch-data.mjs --verify-only",
     "test:browser": "node tools/browser-review.mjs",
     "test:gpu": "tsx tools/make-reference.ts && node tools/gpu-test.mjs && node tools/gpu-validation.mjs",
-    "test:data": "node tools/test-data-setup.mjs"
+    "test:data": "node tools/test-data-setup.mjs",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit",
+    "test:ci-browser": "node tools/ci-browser.mjs",
+    "release:package": "node tools/package-release.mjs"
   },
   "dependencies": {
     "@noble/hashes": "^2.4.0",
     "three": "^0.180.0"
   },
   "devDependencies": {
+    "@eslint/js": "^10.0.1",
     "@playwright/test": "^1.55.0",
     "@types/three": "^0.180.0",
+    "eslint": "^10.12.0",
+    "globals": "^17.13.0",
+    "prettier": "^3.9.10",
     "tsx": "^4.23.15",
     "typescript": "^5.9.0",
+    "typescript-eslint": "^8.71.2",
     "vite": "^7.1.0",
     "vitest": "^4.1.11"
   },
   "description": "A browser-based fruit fly connectome simulation, visualization and sonification",
   "engines": {
-    "node": ">=22.12.0"
+    "node": "^22.20.0 || >=24.12.0"
   }
 }

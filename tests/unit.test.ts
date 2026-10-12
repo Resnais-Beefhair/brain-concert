@@ -46,3 +46,9 @@ test('Malformed CSR, target, position and numeric IDs rejected', () => {
   d.ids[0] = '9e15';
   expect(() => validateNetwork(d)).toThrow();
 });
+
+test('original artwork may opt into browser language without changing portable default', () => {
+  expect(chooseLanguage(['fi-FI'], null, true)).toBe('fi');
+  expect(chooseLanguage(['fi-FI'], 'en', true)).toBe('en');
+  expect(chooseLanguage(['en-GB'], null, true)).toBe('en');
+});

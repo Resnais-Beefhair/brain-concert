@@ -1,35 +1,62 @@
 import fs from 'node:fs/promises';
+import { createReadStream, createWriteStream } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { createHash } from 'node:crypto';
+import { createHash, randomUUID } from 'node:crypto';
+import { Readable, Transform } from 'node:stream';
+import { pipeline } from 'node:stream/promises';
 
 const root = fileURLToPath(new URL('../', import.meta.url));
 const manifest = JSON.parse(await fs.readFile(path.join(root, 'data/manifest.json'), 'utf8'));
 const base = new URL(process.env.DATA_BASE_URL || 'https://koodio.fi/demot/aivokonsertti/data/');
 const output = path.resolve(process.env.DATA_OUTPUT_DIR || path.join(root, 'public/data'));
 const verifyOnly = process.argv.includes('--verify-only');
-const valid = (bytes, spec) =>
-  bytes.length === spec.bytes && createHash('sha256').update(bytes).digest('hex') === spec.sha256;
+async function validFile(file, spec) {
+  try {
+    if ((await fs.stat(file)).size !== spec.bytes) return false;
+    const hash = createHash('sha256');
+    for await (const chunk of createReadStream(file)) hash.update(chunk);
+    return hash.digest('hex') === spec.sha256;
+  } catch (error) {
+    if (error.code === 'ENOENT') return false;
+    throw error;
+  }
+}
 
 await fs.mkdir(output, { recursive: true });
 for (const [name, spec] of Object.entries(manifest.files)) {
   const destination = path.join(output, name);
-  const existing = await fs.readFile(destination).catch((error) => {
-    if (error.code !== 'ENOENT') throw error;
-    return null;
-  });
-  if (existing && valid(existing, spec)) {
+  if (await validFile(destination, spec)) {
     console.log(`Verified ${name}`);
     continue;
   }
   if (verifyOnly) throw new Error(`Missing or invalid data: ${name}. Run npm run data:fetch.`);
   const response = await fetch(new URL(name, base), { signal: AbortSignal.timeout(180_000) });
-  if (!response.ok) throw new Error(`Download failed: ${name} (HTTP ${response.status})`);
-  const bytes = Buffer.from(await response.arrayBuffer());
-  if (!valid(bytes, spec)) throw new Error(`Integrity check failed: ${name}; nothing overwritten.`);
-  const temporary = `${destination}.${process.pid}.tmp`;
+  if (!response.ok || !response.body) {
+    await response.body?.cancel();
+    throw new Error(`Download failed: ${name} (HTTP ${response.status})`);
+  }
+  const temporary = `${destination}.${randomUUID()}.tmp`;
+  const hash = createHash('sha256');
+  let received = 0;
+  const integrityError = () => new Error(`Integrity check failed: ${name}; nothing overwritten.`);
   try {
-    await fs.writeFile(temporary, bytes, { flag: 'wx' });
+    await pipeline(
+      Readable.fromWeb(response.body),
+      new Transform({
+        transform(chunk, _encoding, callback) {
+          received += chunk.length;
+          if (received > spec.bytes) {
+            callback(integrityError());
+            return;
+          }
+          hash.update(chunk);
+          callback(null, chunk);
+        },
+      }),
+      createWriteStream(temporary, { flags: 'wx' }),
+    );
+    if (received !== spec.bytes || hash.digest('hex') !== spec.sha256) throw integrityError();
     await fs.rename(temporary, destination);
   } finally {
     await fs.rm(temporary, { force: true });

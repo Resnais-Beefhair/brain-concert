@@ -3,7 +3,13 @@ let saved: string | null = null;
 try {
   saved = localStorage.getItem('brain-concert-language');
 } catch {}
-const lang = saved === 'fi' ? 'fi' : 'en';
+const lang =
+  saved === 'fi' ||
+  (saved !== 'en' &&
+    import.meta.env.VITE_BROWSER_LANGUAGE === 'true' &&
+    navigator.language.toLowerCase().startsWith('fi'))
+    ? 'fi'
+    : 'en';
 const boot = document.getElementById('boot');
 if (boot) {
   document.documentElement.lang = lang;

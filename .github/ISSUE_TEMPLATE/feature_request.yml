@@ -1,0 +1,15 @@
+name: Feature request
+description: Suggest a focused improvement.
+body:
+  - type: textarea
+    id: need
+    attributes:
+      label: What would this help you do?
+      description: Describe the use case and the smallest useful change.
+    validations:
+      required: true
+  - type: textarea
+    id: limits
+    attributes:
+      label: Model, data or artistic implications
+      description: Would this change the simulated network or the interpretation of its activity?

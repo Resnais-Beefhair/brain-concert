@@ -1,28 +1,18 @@
-import { loadingMarkup, loadingProgress } from './loading';
+import { parseUrlState, serializeUrlState } from './url-state';
+import { mountUI, $, text, syncControls } from './ui';
+import { createDefaultState, type AppState } from './state';
+import { inputs } from './inputs';
+import { EventLog } from './event-log';
+import { errorKey } from './errors';
+import { renderCell, searchCells } from './inspector';
+import { loadingProgress } from './loading';
 import './style.css';
 import { GPUBrain, type Network, type GPUFrame } from './gpu';
 import { loadNetwork, type Manifest } from './data';
 import { Scene } from './scene';
 import { Sound } from './sound';
 import { t, setLanguage, language, type Key, type Language } from './i18n';
-const $ = <T extends HTMLElement = HTMLElement>(id: string) => document.getElementById(id) as T;
-const tr = (key: Key, tag = 'span') => `<${tag} data-t="${key}">${t(key)}</${tag}>`;
-const languageSelect = (id: string) =>
-  `<select id="${id}" class="language" aria-label="Suomi / English"><option value="fi">FI · Suomi</option><option value="en">EN · English</option></select>`;
-$('app').innerHTML = `
-<div id="stage"></div><div class="paper"></div>
-<header><div class="brand"><b>✳</b>BRAIN CONCERT</div><div class="header-right"><button id="sound" class="sound-primary" data-t="soundOn" aria-pressed="false">${t('soundOn')}</button><button id="record" data-t="record">${t('record')}</button><button id="about" data-t="about">${t('about')}</button><button id="settings" data-t="menu">${t('menu')}</button>${languageSelect('language')}</div></header>
-<section class="nameplate"><div class="eyebrow">${tr('tag')} / 02</div><h1 data-t="title">${t('title')}</h1><p data-t="intro">${t('intro')}</p><div class="edition">DROSOPHILA MELANOGASTER</div></section>
-<div class="badge"><strong>138 639</strong>${tr('neurons')}<br><br><strong>54 492 922</strong>${tr('synapses')}</div>
-<nav class="mode-switch" data-label="anatomy"><button data-mode="anatomy" data-t="anatomy" aria-pressed="false">${t('anatomy')}</button><button data-mode="threads" data-t="threads" aria-pressed="false">${t('threads')}</button><button data-mode="bloom" data-t="bloom" aria-pressed="true">${t('bloom')}</button></nav>
-<div class="side-note">${tr('notice')}<br>${tr('viewHint')}</div>
-<div class="tools"><button id="home" data-t="home">${t('home')}</button><button id="inspect" data-t="inspect">${t('inspect')}</button><button id="cinema" data-t="cinema">${t('cinema')}</button></div>
-<section class="transport"><button id="play" class="play" data-label="resume">▶</button><div class="piece"><div class="title" data-t="track">${t('track')}</div><div class="status" id="status">${t('waiting')}</div></div><div class="impulses">${(['taste', 'touch', 'light', 'scent'] as Key[]).map((k, i) => `<button data-input="${i}"><span>${['◈', '≋', '☼', '❋'][i]}</span>${tr(k)}</button>`).join('')}</div><canvas class="wave" id="wave" width="240" height="60" aria-hidden="true"></canvas><div class="audio"><input id="volume" type="range" min="0" max="80" value="45" data-label="volume"></div></section>
-<aside id="settings-panel" class="drawer" hidden><div class="head"><h2 data-t="menu">${t('menu')}</h2><button data-close="settings-panel" data-label="close">✕</button></div><label>${tr('world')}<select id="environment"><option value="tide" data-t="tide">${t('tide')}</option><option value="storm" data-t="storm">${t('storm')}</option><option value="still" data-t="still">${t('still')}</option></select></label><label>${tr('palette')}<select id="palette"><option value="glass" data-t="glass">${t('glass')}</option><option value="organ" data-t="organ">${t('organ')}</option><option value="raw" data-t="raw">${t('raw')}</option></select></label><label>${tr('speed')} <span id="speed-value">0.25×</span><input id="speed" type="range" min="5" max="100" value="25" data-label="speed"></label><label>${tr('colour')}<select id="colour"><option value="aurora" data-t="aurora">${t('aurora')}</option><option value="prism" data-t="prism">${t('prism')}</option><option value="ember" data-t="ember" selected>${t('ember')}</option></select></label><p class="fine" data-t="colourNote">${t('colourNote')}</p><label>${tr('quality')}<select id="quality"><option value="balanced" data-t="balanced">${t('balanced')}</option><option value="high" data-t="high">${t('high')}</option><option value="low" data-t="low">${t('low')}</option></select></label><label class="check"><input id="gentle" type="checkbox">${tr('motion')}</label><label class="check"><input id="drift" type="checkbox" checked>${tr('rotation')}</label><h3 data-t="experiment">${t('experiment')}</h3><div class="actions"><button id="cut" class="action" data-t="cut" aria-pressed="false">${t('cut')}</button><button id="mute" class="action" data-t="mute" aria-pressed="false">${t('mute')}</button><button id="reset" class="action" data-t="reset">${t('reset')}</button><button id="export" class="action" data-t="export">${t('export')}</button></div><div class="metrics"><span data-t="modelStep">${t('modelStep')}</span><strong id="model-time">0.00 s</strong><span data-t="active">${t('active')}</span><strong id="active">0</strong><span data-t="rate">${t('rate')}</span><strong id="rate">—</strong><span>FPS</span><strong id="fps">—</strong></div><p class="fine" data-t="logBound">${t('logBound')}</p></aside>
-<aside id="inspector" class="drawer" hidden><div class="head"><h2 data-t="inspect">${t('inspect')}</h2><button data-close="inspector" data-label="close">✕</button></div><input id="search" class="search" data-placeholder="search" data-label="search" placeholder="${t('search')}"><div id="results" class="results"></div><div id="detail"><p class="fine" data-t="selectHint">${t('selectHint')}</p></div></aside>
-<section class="load-panel" id="intro">${loadingMarkup()}<div id="obstacle" hidden><p id="reason"></p></div></section>
-<button id="exit-cinema" data-t="exitCinema">${t('exitCinema')}</button><div id="toast" class="toast" role="status" aria-live="polite"></div><div class="scene-credit" data-t="credits">${t('credits')}</div>
-<dialog id="about-dialog"><button id="close-about" class="close" data-t="close">${t('close')}</button><div class="eyebrow">Brain Concert / 02</div><h2 data-t="aboutTitle">${t('aboutTitle')}</h2>${(['about1', 'about2', 'about3', 'about4', 'about5'] as Key[]).map((k) => tr(k, 'p')).join('')}<p><a href="./CREDITS.md" target="_blank" rel="noopener noreferrer" data-t="sources">${t('sources')}</a></p><p class="note-small" data-t="credits">${t('credits')}</p></dialog>`;
+mountUI();
 let net: Network,
   manifest: Manifest,
   gpu: GPUBrain,
@@ -32,15 +22,9 @@ let net: Network,
 let ready = false,
   running = false,
   entered = false,
-  environment = 'tide',
-  speed = 0.25,
-  busy = false,
-  selected = -1;
-const silent = new Set<number>();
-const impulses = [0, 0, 0, 0];
-let pulsesUntil = [0, 0, 0, 0];
-let events: Record<string, unknown>[] = [];
-let dropped = 0;
+  busy = false;
+const state = createDefaultState(matchMedia('(prefers-reduced-motion: reduce)').matches);
+const events = new EventLog<Record<string, unknown>>(2000);
 const commands: { type: string; value?: unknown; index?: number }[] = [];
 let runTimer: ReturnType<typeof setTimeout>;
 let toastTimer: ReturnType<typeof setTimeout>;
@@ -71,16 +55,14 @@ const diagnostics = {
   backend: 'WebGPU',
   allNeurons: true,
 };
-Object.assign(window, { brainConcertDiagnostics: diagnostics });
+Object.defineProperty(window, 'brainConcertDiagnostics', {
+  get: () => Object.freeze({ ...diagnostics, errors: Object.freeze([...diagnostics.errors]) }),
+});
 function toast(message: string) {
   $('toast').textContent = message;
   $('toast').classList.add('show');
   clearTimeout(toastTimer);
   toastTimer = setTimeout(() => $('toast').classList.remove('show'), 4000);
-}
-function text(id: string, key: Key) {
-  $(id).dataset.t = key;
-  $(id).textContent = t(key);
 }
 function localize(value: Language) {
   setLanguage(value);
@@ -89,7 +71,7 @@ function localize(value: Language) {
   document.title = 'Brain Concert — ' + t('track');
   text('status', running ? 'live' : entered ? 'paused' : 'waiting');
   if (obstacleKey) text('reason', obstacleKey);
-  if (selected >= 0) inspect(selected);
+  if (state.selected >= 0) inspect(state.selected);
   $('play').setAttribute('aria-label', t(running ? 'pause' : 'resume'));
   for (const id of ['cut', 'mute'])
     text(
@@ -113,12 +95,16 @@ function fail(error: unknown) {
   diagnostics.errors.push(message);
   running = false;
   diagnostics.running = false;
-  scene && (scene.running = false);
-  sound && ((sound.playing = false), sound.apply());
+  if (scene) scene.running = false;
+  if (sound) {
+    sound.playing = false;
+    sound.apply();
+  }
   clearTimeout(runTimer);
-  toast(t('error') + ': ' + message);
+  toast(t(errorKey(error)));
+  $('error-code').textContent = message.replace(/^Error: /, '');
   if (!entered) {
-    obstacleKey = message.includes('WEBGPU') ? 'unsupported' : 'dataError';
+    obstacleKey = errorKey(error);
     text('reason', obstacleKey);
     $('obstacle').hidden = false;
     $('loadline').hidden = true;
@@ -127,7 +113,7 @@ function fail(error: unknown) {
 }
 function queue(type: string, value?: unknown, index?: number) {
   commands.push({ type, value, index });
-  if (!busy) void applyCommands();
+  if (!busy) void applyCommands().catch(fail);
 }
 let commandChain: Promise<void> = Promise.resolve();
 function applyCommands() {
@@ -136,18 +122,14 @@ function applyCommands() {
     while (commands.length) {
       const c = commands.shift()!;
       events.push({ step: gpu.step, ...c });
-      if (events.length > 2000) {
-        events.shift();
-        dropped++;
-      }
       switch (c.type) {
         case 'environment':
-          environment = c.value as string;
+          state.environment = c.value as AppState['environment'];
           break;
         case 'input': {
           const i = c.index!;
-          impulses[i] = Number(c.value);
-          pulsesUntil[i] = gpu.step * 0.2 + 200;
+          state.impulses[i] = Number(c.value);
+          state.pulsesUntil[i] = gpu.step * 0.2 + 200;
           break;
         }
         case 'cut':
@@ -160,67 +142,46 @@ function applyCommands() {
           gpu.silence(c.index!, Boolean(c.value));
           break;
         case 'reset':
+          stopRecording();
           await gpu.reset();
           frame = null;
           scene.clear();
           sound.reset();
-          silent.clear();
-          events = [];
-          dropped = 0;
-          pulsesUntil = [0, 0, 0, 0];
-          environment = 'tide';
-          $<HTMLSelectElement>('environment').value = 'tide';
-          for (const id of ['cut', 'mute']) {
-            $(id).setAttribute('aria-pressed', 'false');
-            text(id, id as Key);
-          }
+          Object.assign(
+            state,
+            createDefaultState(matchMedia('(prefers-reduced-motion: reduce)').matches),
+          );
+          events.clear();
           diagnostics.totalSpikes = 0;
           diagnostics.timeMs = 0;
-          sound.palette = 'glass';
-          $<HTMLSelectElement>('palette').value = 'glass';
-          speed = 0.25;
-          $<HTMLInputElement>('speed').value = '25';
-          $('speed-value').textContent = '0.25×';
+          diagnostics.active = 0;
+          diagnostics.computeMs = 0;
+          lastBatchTime = 0;
+          actualRate = 0;
+          syncSettings();
+          scene.home();
           scene.select(-1);
-          selected = -1;
           $('inspector').hidden = true;
+          $<HTMLInputElement>('search').value = '';
+          $('results').replaceChildren();
           break;
       }
     }
   });
   return commandChain;
 }
-function inputs() {
-  const t = ((gpu?.step ?? 0) * 0.2) / 1000;
-  let rates =
-    environment === 'still'
-      ? [0, 0, 0, 0]
-      : environment === 'storm'
-        ? [
-            10 + 25 * (1 + Math.sin(t * 0.6)),
-            10 + 65 * Math.max(0, Math.sin(t * 3.1)) ** 4,
-            1 + 4 * Math.max(0, Math.sin(t * 1.1)) ** 3,
-            1 + 3 * Math.max(0, Math.cos(t * 0.7)) ** 3,
-          ]
-        : [
-            20 + 50 * ((1 + Math.sin(t * 0.7)) / 2) ** 3,
-            8 + 45 * ((1 + Math.sin(t * 1.13 + 1.4)) / 2) ** 5,
-            0.5 + 2 * ((1 + Math.sin(t * 0.37 + 0.8)) / 2) ** 3,
-            0.4 + 2 * ((1 + Math.cos(t * 0.53)) / 2) ** 3,
-          ];
-  for (let i = 0; i < 4; i++)
-    if (gpu.step * 0.2 < pulsesUntil[i]) rates[i] = Math.max(rates[i], impulses[i]);
-  return rates;
-}
 async function pump() {
   if (!running || busy) return;
   clearTimeout(runTimer);
-  await applyCommands();
+  await applyCommands().catch(fail);
   if (!running) return;
   busy = true;
   const begin = performance.now();
   try {
-    const next = await gpu.advance(10, inputs());
+    const next = await gpu.advance(
+      10,
+      inputs(gpu.step, state.environment, state.impulses, state.pulsesUntil),
+    );
     frame = next;
     diagnostics.timeMs = next.timeMs;
     diagnostics.computeMs = next.computeMs;
@@ -232,16 +193,19 @@ async function pump() {
       scene.receive(next, gpu.cut);
       sound.schedule(next);
     }
-    if (selected >= 0 && $('cell-spikes'))
-      $('cell-spikes').textContent = String(next.counts[selected]);
+    if (state.selected >= 0 && $('cell-spikes'))
+      $('cell-spikes').textContent = String(next.counts[state.selected]);
   } catch (e) {
     fail(e);
   } finally {
     busy = false;
   }
-  await applyCommands();
+  await applyCommands().catch(fail);
   if (running)
-    runTimer = setTimeout(() => void pump(), Math.max(0, 2 / speed - (performance.now() - begin)));
+    runTimer = setTimeout(
+      () => void pump(),
+      Math.max(0, 2 / state.speed - (performance.now() - begin)),
+    );
 }
 async function play(value: boolean) {
   if (!ready) return;
@@ -328,26 +292,32 @@ document.querySelectorAll<HTMLButtonElement>('[data-close]').forEach(
       $(b.dataset.close!).hidden = true;
       if (b.dataset.close === 'inspector') {
         scene.select(-1);
-        selected = -1;
+        state.selected = -1;
       }
     }),
 );
 $('environment').onchange = () => queue('environment', $<HTMLSelectElement>('environment').value);
 $('palette').onchange = () => {
-  sound.palette = $<HTMLSelectElement>('palette').value;
+  state.palette = $<HTMLSelectElement>('palette').value as AppState['palette'];
+  sound.palette = state.palette;
   queue('palette', sound.palette);
 };
 $('speed').oninput = () => {
-  speed = Number($<HTMLInputElement>('speed').value) / 100;
-  $('speed-value').textContent = speed.toFixed(2) + '×';
-  queue('speed', speed);
+  state.speed = Number($<HTMLInputElement>('speed').value) / 100;
+  $('speed-value').textContent = state.speed.toFixed(2) + '×';
+  queue('speed', state.speed);
 };
-$('colour').onchange = () =>
-  scene.setPalette($<HTMLSelectElement>('colour').value as 'aurora' | 'prism' | 'ember');
-$('quality').onchange = () =>
-  scene.quality($<HTMLSelectElement>('quality').value as 'low' | 'balanced' | 'high');
-$('gentle').onchange = () => (scene.gentle = $<HTMLInputElement>('gentle').checked);
-$('drift').onchange = () => (scene.drift = $<HTMLInputElement>('drift').checked);
+for (const id of ['colour', 'quality'] as const)
+  $(id).onchange = () => {
+    Object.assign(state, { [id]: $<HTMLSelectElement>(id).value });
+    if (id === 'colour') scene.setPalette(state.colour);
+    else scene.quality(state.quality);
+  };
+for (const id of ['gentle', 'drift'] as const)
+  $(id).onchange = () => {
+    state[id] = $<HTMLInputElement>(id).checked;
+    scene[id] = state[id];
+  };
 for (const id of ['cut', 'mute'])
   $(id).onclick = () => {
     const value = $(id).getAttribute('aria-pressed') !== 'true';
@@ -359,50 +329,38 @@ for (const id of ['cut', 'mute'])
 $('reset').onclick = () => queue('reset');
 $('home').onclick = () => {
   scene.home();
-  selected = -1;
+  state.selected = -1;
   $('inspector').hidden = true;
 };
 document.querySelectorAll<HTMLButtonElement>('[data-mode]').forEach(
   (b) =>
     (b.onclick = () => {
-      scene.setMode(b.dataset.mode!);
+      state.mode = b.dataset.mode as AppState['mode'];
+      scene.setMode(state.mode);
       document
         .querySelectorAll('[data-mode]')
         .forEach((el) => el.setAttribute('aria-pressed', String(el === b)));
     }),
 );
 function inspect(index: number) {
-  selected = index;
+  state.selected = index;
   scene.select(index);
-  $('inspector').hidden = false;
-  $('settings-panel').hidden = true;
-  $('detail').innerHTML =
-    `<div class="cell-name" id="cell-name"></div><div class="cell-id" id="cell-id"></div><div class="metrics"><span>${t('connections')}</span><strong>${net.offsets[index + 1] - net.offsets[index]}</strong><span>${t('spikes')}</span><strong id="cell-spikes">${frame?.counts[index] ?? 0}</strong></div>${net.positions[index * 4 + 3] ? '' : `<p class="fine">${t('unlocated')}</p>`}<div class="actions"><button id="focus-cell" class="action">${t('focus')}</button><button id="silence-cell" class="action" aria-pressed="${silent.has(index)}">${t(silent.has(index) ? 'restore' : 'silence')}</button></div>`;
-  $('cell-name').textContent = net.labels[index] || net.classes[index] || '—';
-  $('cell-id').textContent = net.ids[index];
-  $('focus-cell').onclick = () => scene.focus();
-  $('silence-cell').onclick = () => {
-    const value = !silent.has(index);
-    value ? silent.add(index) : silent.delete(index);
-    queue('silence', value, index);
-    inspect(index);
-  };
+  renderCell(
+    net,
+    index,
+    frame,
+    state.silent.has(index),
+    () => scene.focus(),
+    () => {
+      const value = !state.silent.has(index);
+      if (value) state.silent.add(index);
+      else state.silent.delete(index);
+      queue('silence', value, index);
+      inspect(index);
+    },
+  );
 }
-$('search').oninput = () => {
-  const q = $<HTMLInputElement>('search').value.trim().toLowerCase();
-  $('results').replaceChildren();
-  if (q.length < 2) return;
-  let found = 0;
-  for (let i = 0; i < net.n && found < 18; i++)
-    if ((net.ids[i] + ' ' + net.labels[i]).toLowerCase().includes(q)) {
-      found++;
-      const b = document.createElement('button');
-      b.textContent = (net.labels[i] || '—') + ' · …' + net.ids[i].slice(-7);
-      b.onclick = () => inspect(i);
-      $('results').append(b);
-    }
-  if (!found) $('results').textContent = t('noResults');
-};
+$('search').oninput = () => searchCells(net, inspect);
 function cinema(value: boolean) {
   document.body.classList.toggle('cinematic', value);
   document
@@ -436,8 +394,8 @@ $('export').onclick = () =>
             step: gpu.step,
             model: 'WebGPU-LIF-f32-dt0.2ms-Bernoulli',
             manifest,
-            events,
-            droppedEvents: dropped,
+            events: events.toArray(),
+            droppedEvents: events.dropped,
             diagnostics,
             notes:
               'Commands are stamped at the GPU integration boundary. A truncated log cannot replay from the initial seed. Float32 GPU execution may differ across hardware.',
@@ -538,6 +496,27 @@ window.addEventListener('pagehide', () => {
   sound?.dispose();
   captureTracks.forEach((t) => t.stop());
 });
+function syncSettings() {
+  syncControls(state);
+  sound.palette = state.palette;
+  scene.setPalette(state.colour);
+  scene.setMode(state.mode);
+  scene.quality(state.quality);
+  scene.gentle = state.gentle;
+  scene.drift = state.drift;
+}
+$('share').onclick = async () => {
+  await applyCommands().catch(fail);
+  const url = new URL(location.href);
+  url.hash = serializeUrlState(state, net.ids[state.selected]);
+  history.replaceState(null, '', url);
+  try {
+    await navigator.clipboard.writeText(url.href);
+    toast(t('linkCopied'));
+  } catch {
+    toast(t('linkFailed'));
+  }
+};
 async function init() {
   if (!isSecureContext || !navigator.gpu) {
     obstacleKey = !isSecureContext ? 'local' : 'unsupported';
@@ -558,16 +537,22 @@ async function init() {
     await new Promise((r) => setTimeout(r, 0));
     scene = new Scene($('stage'), net, { palette: 'ember' });
     scene.onSelect = inspect;
-    scene.gentle = matchMedia('(prefers-reduced-motion: reduce)').matches;
-    $<HTMLInputElement>('gentle').checked = scene.gentle;
+
     gpu = await GPUBrain.create(net);
     gpu.device.addEventListener('uncapturederror', (e) =>
       fail((e as GPUUncapturedErrorEvent).error.message),
     );
     gpu.device.lost.then((info) => {
-      if (info.reason !== 'destroyed') fail(t('deviceLost'));
+      if (info.reason !== 'destroyed') fail(Error('GPU_DEVICE_LOST'));
     });
     sound = new Sound(net);
+    const { neuron, ...shared } = parseUrlState(location.hash);
+    Object.assign(state, shared);
+    syncSettings();
+    if (neuron) {
+      const index = net.ids.indexOf(neuron);
+      if (index >= 0) inspect(index);
+    }
     ready = true;
     diagnostics.ready = true;
     diagnostics.neurons = net.n;
@@ -595,7 +580,8 @@ async function init() {
         context.lineWidth = 1;
         for (let i = 0; i < 240; i++) {
           const y = 30 + wave[i * 2] * 65;
-          i ? context.lineTo(i, y) : context.moveTo(i, y);
+          if (i) context.lineTo(i, y);
+          else context.moveTo(i, y);
         }
         context.stroke();
         $('model-time').textContent = ((frame?.timeMs ?? 0) / 1000).toFixed(2) + ' s';

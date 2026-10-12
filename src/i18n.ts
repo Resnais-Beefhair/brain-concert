@@ -1,6 +1,18 @@
 export type Language = 'fi' | 'en';
 export const translations = {
   en: {
+    dataFetchError:
+      'The brain data could not be loaded. Check your connection and reload the page.',
+    gpuLimitError:
+      'This graphics device cannot hold the full network. Try a device with more graphics memory.',
+    gpuStartError:
+      'The graphics device could not start the simulation. Reload or try an up-to-date browser.',
+    unexpectedError: 'The performance stopped unexpectedly. Reload the page to start again.',
+    technicalDetails: 'Technical details',
+    share: 'Copy settings link',
+    linkCopied: 'Settings link copied. Activity and sound are not saved.',
+    linkFailed: 'The link could not be copied. Select and copy the address from your browser.',
+
     loadTitle: 'A whole brain. Coming together.',
     loadGoal: '138,639 neurons · 54.5 million synapses represented',
     loadHint: 'The experience starts automatically, with sound off.',
@@ -119,7 +131,8 @@ export const translations = {
     autoPause: 'Paused while the tab was in the background.',
     inputSent: 'A sensory impulse entered the network.',
     logBound: 'The last 2,000 control events are retained; truncated logs are marked.',
-    dataError: 'The data could not be verified. Reload or extract the complete package.',
+    dataError:
+      'The brain data could not be verified. Reload the page; if the problem continues, report it using the GitHub link.',
     fullNetwork: 'Whole computational network',
     viewHint: 'Drag to orbit · scroll to approach',
     track: 'The sound of a brain',
@@ -132,6 +145,18 @@ export const translations = {
     note: 'Last sounding cell',
   },
   fi: {
+    dataFetchError:
+      'Aivoaineiston lataus epäonnistui. Tarkista verkkoyhteys ja lataa sivu uudelleen.',
+    gpuLimitError:
+      'Tämä näytönohjain ei pysty varaamaan muistia koko verkolle. Kokeile laitetta, jossa on enemmän grafiikkamuistia.',
+    gpuStartError:
+      'Näytönohjain ei voinut käynnistää simulaatiota. Lataa uudelleen tai kokeile ajantasaista selainta.',
+    unexpectedError: 'Esitys keskeytyi odottamatta. Aloita uudelleen lataamalla sivu.',
+    technicalDetails: 'Tekniset tiedot',
+    share: 'Kopioi asetuslinkki',
+    linkCopied: 'Asetuslinkki kopioitu. Aktiivisuutta ja ääntä ei tallenneta.',
+    linkFailed: 'Linkin kopiointi ei onnistunut. Kopioi osoite selaimen osoiteriviltä.',
+
     loadTitle: 'Kokonaiset aivot. Hetki vielä.',
     loadGoal: '138 639 neuronia · 54,5 miljoonaa synapsia edustettuna',
     loadHint: 'Esitys alkaa automaattisesti. Ääni on aluksi pois.',
@@ -250,7 +275,8 @@ export const translations = {
     autoPause: 'Tauotettu taustavälilehden ajaksi.',
     inputSent: 'Aistiärsyke saapui verkkoon.',
     logBound: 'Viimeiset 2 000 ohjaustapahtumaa säilytetään; katkaistu loki merkitään.',
-    dataError: 'Aineistoa ei voitu varmentaa. Lataa uudelleen tai pura koko paketti.',
+    dataError:
+      'Aivoaineistoa ei voitu varmentaa. Lataa sivu uudelleen; jos ongelma jatkuu, ilmoita siitä GitHub-linkin kautta.',
     fullNetwork: 'Koko laskennallinen verkko',
     viewHint: 'Vedä pyörittääksesi · vieritä lähentyäksesi',
     track: 'Aivojen ääni',
@@ -264,9 +290,13 @@ export const translations = {
   },
 } satisfies Record<Language, Record<string, string>>;
 export type Key = keyof typeof translations.en;
-export function chooseLanguage(languages: readonly string[], saved: string | null): Language {
+export function chooseLanguage(
+  languages: readonly string[],
+  saved: string | null,
+  browserLanguage = false,
+): Language {
   if (saved === 'fi' || saved === 'en') return saved;
-  return 'en';
+  return browserLanguage && languages[0]?.toLowerCase().startsWith('fi') ? 'fi' : 'en';
 }
 let saved: string | null = null;
 try {
@@ -275,6 +305,7 @@ try {
 export let language: Language = chooseLanguage(
   typeof navigator !== 'undefined' ? navigator.languages : [],
   saved,
+  import.meta.env.VITE_BROWSER_LANGUAGE === 'true',
 );
 export const t = (key: Key) => translations[language][key];
 export function setLanguage(value: Language) {

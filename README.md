@@ -16,7 +16,7 @@ An interactive fruit fly connectome, simulated, visualized and sonified entirely
 
 ## Run locally
 
-Requires **Node.js 22.12 or newer**, npm, and a current WebGPU-capable browser with hardware acceleration. Recent Chrome or Edge is a useful starting point; support depends on your operating system, GPU and browser configuration. The full network is demanding on memory and graphics resources.
+Requires **Node.js 22.20+ (22.x) or 24.12+**, npm, and a current WebGPU-capable browser with hardware acceleration. Recent Chrome or Edge is a useful starting point; support depends on your operating system, GPU and browser configuration. The full network is demanding on memory and graphics resources.
 
 ```sh
 git clone https://github.com/Resnais-Beefhair/brain-concert.git
@@ -78,3 +78,13 @@ docs/                 Model, provenance, integration and verification guides
 The original application code and documentation are released under the [MIT License](LICENSE), copyright 2026 Resnais-Beefhair and contributors.
 
 The FlyWire connectivity and archived annotation data remain **CC BY 4.0**; they are not relicensed under MIT. Upstream model code and software dependencies retain their own notices. See [credits](CREDITS.md) and [third-party and data licenses](public/licenses/).
+
+## Contributing and releases
+
+[Contributing](CONTRIBUTING.md) · [Security](SECURITY.md) ·
+[Community guidelines](CODE_OF_CONDUCT.md) · [Changelog](CHANGELOG.md) ·
+[Release guide](docs/RELEASING.md) · [Audit decisions](docs/AUDIT-2026-10-12.md)
+
+**Copy settings link** in the settings drawer shares sensory weather, timbre,
+model-time speed, colour, view mode and optionally a selected neuron. It starts
+fresh activity with sound off; it is not a replay of a neural state.

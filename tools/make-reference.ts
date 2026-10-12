@@ -18,7 +18,7 @@ const results = [364, -364, 20, 0].map((w) => {
     outputs: { out: [1] },
   });
   b.v[0] = 20;
-  let c = [0, 0];
+  const c = [0, 0];
   b.onSpike = (i) => c[i]++;
   b.advance(20);
   return { w, counts: c, v: Array.from(b.v), g: Array.from(b.g) };

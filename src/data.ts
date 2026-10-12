@@ -19,9 +19,13 @@ export interface LoadProgress {
   phase: 'download' | 'verify';
 }
 export async function loadNetwork(progress: (fraction: number, detail?: LoadProgress) => void) {
-  const r = await fetch('./data/manifest.json');
+  const r = await fetch('./data/manifest.json').catch(() => {
+    throw Error('DATA_MANIFEST');
+  });
   if (!r.ok) throw Error('DATA_MANIFEST');
-  const manifest: Manifest = await r.json();
+  const manifest: Manifest = await r.json().catch(() => {
+    throw Error('DATA_SCHEMA');
+  });
   if (manifest.schemaVersion !== 2) throw Error('DATA_SCHEMA');
   let loaded = 0;
   const buffers: Record<string, ArrayBuffer> = {};
@@ -33,7 +37,9 @@ export async function loadNetwork(progress: (fraction: number, detail?: LoadProg
     'positions.bin',
     'metadata.json',
   ]) {
-    const res = await fetch('./data/' + name);
+    const res = await fetch('./data/' + name).catch(() => {
+      throw Error('DATA_FETCH ' + name);
+    });
     if (!res.ok) throw Error('DATA_FETCH ' + name);
     const expected = manifest.files[name].bytes;
     const bytes = new Uint8Array(expected);

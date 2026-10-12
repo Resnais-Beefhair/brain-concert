@@ -1,0 +1,27 @@
+name: Bug report
+description: Report a reproducible problem with Brain Concert.
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: What happened?
+      description: Steps to reproduce, expected behaviour, and what actually happened.
+    validations:
+      required: true
+  - type: input
+    id: environment
+    attributes:
+      label: Browser, version and operating system
+    validations:
+      required: true
+  - type: input
+    id: graphics
+    attributes:
+      label: GPU and WebGPU availability
+      description: If known, include your GPU and whether navigator.gpu is available.
+  - type: textarea
+    id: diagnostics
+    attributes:
+      label: Diagnostics
+      description: Copy technical details from the error or window.brainConcertDiagnostics.errors. Remove any private information.
+      render: text

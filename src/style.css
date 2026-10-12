@@ -992,3 +992,27 @@ dialog .close {
     padding: 11px 17px;
   }
 }
+
+.header-right a {
+  font-size: 11px;
+  white-space: nowrap;
+  text-decoration: none;
+}
+.header-right a:hover {
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+@media (max-width: 750px) {
+  .header-right a {
+    font-size: 9px;
+  }
+}
+#error-code {
+  overflow-wrap: anywhere;
+}
+/* The narrow header wraps into two rows; drawers must not cover its controls. */
+@media (max-width: 750px) {
+  .drawer {
+    top: 120px;
+  }
+}

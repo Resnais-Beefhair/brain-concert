@@ -141,7 +141,7 @@ export class GPUBrain {
     const errors = info.messages.filter((m) => m.type === 'error');
     if (errors.length) {
       device.destroy();
-      throw Error(errors.map((e) => e.message).join('\n'));
+      throw Error('GPU_SHADER ' + errors.map((e) => e.message).join('\n'));
     }
     const layout = device.createBindGroupLayout({
       entries: [
@@ -168,7 +168,7 @@ export class GPUBrain {
     const err = await device.popErrorScope();
     if (err) {
       device.destroy();
-      throw Error(err.message);
+      throw Error('GPU_VALIDATION ' + err.message);
     }
     return new GPUBrain(device, net, { integrate, transmit, layout });
   }

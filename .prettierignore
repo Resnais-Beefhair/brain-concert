@@ -1,0 +1,8 @@
+node_modules/
+dist/
+evidence/
+public/
+data/
+data-source/
+package-lock.json
+LICENSE

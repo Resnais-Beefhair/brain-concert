@@ -44,3 +44,8 @@ The converter rejects incorrect connectivity and annotation source hashes before
 Counts: 138,639 neurons; 15,091,983 connection rows; 54,492,922 synapses represented. Every model neuron has an anchor in this archived annotation source. The larger annotation atlas is not the model population.
 
 See [credits](../CREDITS.md) for scientific citations and licenses. This transformation changes representation, coordinates and display labels; it does not reconstruct axon trajectories.
+
+Setup and verification stream files rather than buffering entire payloads. Downloads
+use a unique temporary sibling file, reject excess/truncated bytes or hash mismatches,
+and rename only after verification. Failures clean the temporary file and leave the
+previous destination untouched. Only the small pinned manifest is read at once.

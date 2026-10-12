@@ -8,9 +8,14 @@ const root = process.cwd();
 await fs.mkdir('evidence', { recursive: true });
 const output = await fs.mkdtemp(path.join(root, 'evidence/data-setup-'));
 let corrupt = false;
+let httpError = false;
 const server = createServer(async (request, response) => {
   try {
     const name = path.basename(new URL(request.url, 'http://localhost').pathname);
+    if (httpError) {
+      response.writeHead(503).end();
+      return;
+    }
     if (corrupt) {
       response.end('corrupt fixture');
       return;
@@ -53,11 +58,23 @@ try {
   assert.match(bad.text, /Integrity check failed/);
   assert.deepEqual(await fs.readdir(output), [], 'Corrupt download must not be written');
   corrupt = false;
+  httpError = true;
+  assert.notEqual((await run()).code, 0);
+  assert.deepEqual(await fs.readdir(output), [], 'HTTP failure leaves no partial files');
+  httpError = false;
   const good = await run();
   assert.equal(good.code, 0, good.text);
   assert.equal((await run(true)).code, 0);
   await fs.writeFile(path.join(output, 'offsets.bin'), 'existing corrupt local file');
   assert.notEqual((await run(true)).code, 0);
+  corrupt = true;
+  assert.notEqual((await run()).code, 0);
+  assert.equal(
+    await fs.readFile(path.join(output, 'offsets.bin'), 'utf8'),
+    'existing corrupt local file',
+  );
+  assert.ok(!(await fs.readdir(output)).some((name) => name.endsWith('.tmp')));
+  corrupt = false;
   assert.equal((await run()).code, 0, 'A verified download should repair a corrupt local file');
   await fs.writeFile(
     'evidence/data-setup.json',
@@ -71,13 +88,15 @@ try {
           'verify',
           'local corruption detected',
           'repair',
+          'HTTP failure cleaned',
+          'failed repair preserves destination',
         ],
       },
       null,
       2,
     ),
   );
-  console.log('PASS six data-setup checks against a local HTTP mirror');
+  console.log('PASS eight data-setup checks against a local HTTP mirror');
 } finally {
   await new Promise((resolve) => server.close(resolve));
   await fs.rm(output, { recursive: true, force: true });

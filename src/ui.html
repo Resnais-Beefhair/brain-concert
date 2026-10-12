@@ -1,0 +1,144 @@
+<div id="stage"></div>
+<div class="paper"></div>
+<header>
+  <div class="brand"><b>✳</b>BRAIN CONCERT</div>
+  <div class="header-right">
+    <button id="sound" class="sound-primary" data-t="soundOn" aria-pressed="false"></button
+    ><button id="record" data-t="record"></button
+    ><a
+      id="github"
+      href="https://github.com/Resnais-Beefhair/brain-concert"
+      target="_blank"
+      rel="noopener noreferrer"
+      >GitHub ↗</a
+    ><button id="about" data-t="about"></button><button id="settings" data-t="menu"></button
+    ><select id="language" class="language" data-label="language">
+      <option value="fi">FI · Suomi</option>
+      <option value="en">EN · English</option>
+    </select>
+  </div>
+</header>
+<section class="nameplate">
+  <div class="eyebrow"><span data-t="tag"></span> / 02</div>
+  <h1 data-t="title"></h1>
+  <p data-t="intro"></p>
+  <div class="edition">DROSOPHILA MELANOGASTER</div>
+</section>
+<div class="badge">
+  <strong>138 639</strong><span data-t="neurons"></span><br /><br /><strong>54 492 922</strong
+  ><span data-t="synapses"></span>
+</div>
+<nav class="mode-switch" data-label="anatomy">
+  <button data-mode="anatomy" data-t="anatomy" aria-pressed="false"></button
+  ><button data-mode="threads" data-t="threads" aria-pressed="false"></button
+  ><button data-mode="bloom" data-t="bloom" aria-pressed="true"></button>
+</nav>
+<div class="side-note"><span data-t="notice"></span><br /><span data-t="viewHint"></span></div>
+<div class="tools">
+  <button id="home" data-t="home"></button><button id="inspect" data-t="inspect"></button
+  ><button id="cinema" data-t="cinema"></button>
+</div>
+<section class="transport">
+  <button id="play" class="play" data-label="resume">▶</button>
+  <div class="piece">
+    <div class="title" data-t="track"></div>
+    <div class="status" id="status"></div>
+  </div>
+  <div class="impulses">
+    <button data-input="0"><span>◈</span><span data-t="taste"></span></button
+    ><button data-input="1"><span>≋</span><span data-t="touch"></span></button
+    ><button data-input="2"><span>☼</span><span data-t="light"></span></button
+    ><button data-input="3"><span>❋</span><span data-t="scent"></span></button>
+  </div>
+  <canvas class="wave" id="wave" width="240" height="60" aria-hidden="true"></canvas>
+  <div class="audio">
+    <input id="volume" type="range" min="0" max="80" value="45" data-label="volume" />
+  </div>
+</section>
+<aside id="settings-panel" class="drawer" hidden>
+  <div class="head">
+    <h2 data-t="menu"></h2>
+    <button data-close="settings-panel" data-label="close">✕</button>
+  </div>
+  <label
+    ><span data-t="world"></span
+    ><select id="environment">
+      <option value="tide" data-t="tide"></option>
+      <option value="storm" data-t="storm"></option>
+      <option value="still" data-t="still"></option></select></label
+  ><label
+    ><span data-t="palette"></span
+    ><select id="palette">
+      <option value="glass" data-t="glass"></option>
+      <option value="organ" data-t="organ"></option>
+      <option value="raw" data-t="raw"></option></select></label
+  ><label
+    ><span data-t="speed"></span> <span id="speed-value">0.25×</span
+    ><input id="speed" type="range" min="5" max="100" value="25" data-label="speed" /></label
+  ><label
+    ><span data-t="colour"></span
+    ><select id="colour">
+      <option value="aurora" data-t="aurora"></option>
+      <option value="prism" data-t="prism"></option>
+      <option value="ember" data-t="ember" selected></option></select
+  ></label>
+  <p class="fine" data-t="colourNote"></p>
+  <label
+    ><span data-t="quality"></span
+    ><select id="quality">
+      <option value="balanced" data-t="balanced"></option>
+      <option value="high" data-t="high"></option>
+      <option value="low" data-t="low"></option></select></label
+  ><label class="check"><input id="gentle" type="checkbox" /><span data-t="motion"></span></label
+  ><label class="check"
+    ><input id="drift" type="checkbox" checked /><span data-t="rotation"></span
+  ></label>
+  <h3 data-t="experiment"></h3>
+  <div class="actions">
+    <button id="cut" class="action" data-t="cut" aria-pressed="false"></button
+    ><button id="mute" class="action" data-t="mute" aria-pressed="false"></button
+    ><button id="reset" class="action" data-t="reset"></button
+    ><button id="share" class="action" data-t="share"></button
+    ><button id="export" class="action" data-t="export"></button>
+  </div>
+  <div class="metrics">
+    <span data-t="modelStep"></span><strong id="model-time">0.00 s</strong
+    ><span data-t="active"></span><strong id="active">0</strong><span data-t="rate"></span
+    ><strong id="rate">—</strong><span>FPS</span><strong id="fps">—</strong>
+  </div>
+  <p class="fine" data-t="logBound"></p>
+</aside>
+<aside id="inspector" class="drawer" hidden>
+  <div class="head">
+    <h2 data-t="inspect"></h2>
+    <button data-close="inspector" data-label="close">✕</button>
+  </div>
+  <input id="search" class="search" data-placeholder="search" data-label="search" placeholder="" />
+  <div id="results" class="results"></div>
+  <div id="detail"><p class="fine" data-t="selectHint"></p></div>
+</aside>
+<section class="load-panel" id="intro">
+  <div id="loader"></div>
+  <div id="obstacle" hidden>
+    <p id="reason"></p>
+    <details>
+      <summary data-t="technicalDetails"></summary>
+      <code id="error-code"></code>
+    </details>
+  </div>
+</section>
+<button id="exit-cinema" data-t="exitCinema"></button>
+<div id="toast" class="toast" role="status" aria-live="polite"></div>
+<div class="scene-credit" data-t="credits"></div>
+<dialog id="about-dialog">
+  <button id="close-about" class="close" data-t="close"></button>
+  <div class="eyebrow">Brain Concert / 02</div>
+  <h2 data-t="aboutTitle"></h2>
+  <p data-t="about1"></p>
+  <p data-t="about2"></p>
+  <p data-t="about3"></p>
+  <p data-t="about4"></p>
+  <p data-t="about5"></p>
+  <p><a href="./CREDITS.md" target="_blank" rel="noopener noreferrer" data-t="sources"></a></p>
+  <p class="note-small" data-t="credits"></p>
+</dialog>
