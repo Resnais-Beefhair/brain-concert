@@ -1,11 +1,295 @@
-export type Language='fi'|'en';
-export const translations={
- en:{loadTitle:'A whole brain. Coming together.',loadGoal:'138,639 neurons · 54.5 million synapses represented',loadHint:'The experience starts automatically, with sound off.',loadData:'Brain data received',loadStructure:'Reading the network structure',loadConnections:'Loading connections between neurons',loadPositions:'Placing neurons in the brain',loadInputs:'Loading sensory pathways',loadLabels:'Reading neuron identities',loadVerify:'Checking data integrity',loadStart:'Starting the neural simulation',soundOn:'Enable sound',soundOff:'Mute sound',colour:'Colour palette',aurora:'Aurora',prism:'Prism',ember:'Ember',colourNote:'Colours distinguish positions and signal types artistically, not measured biological colours.',tag:'A living connectome',title:'INSIDE\nTHE SIGNAL.',intro:'One brain. Millions of connections.\nAn endless encounter with electricity.',enter:'Enter the living network',quiet:'Enter without sound',loading:'Preparing the instrument',ready:'The whole network is ready.',requirements:'A modern WebGPU browser and a capable graphics card. All computation happens on your device.',local:'Serve this experience over HTTPS or localhost in a modern WebGPU browser.',download:'Download standalone edition',unsupported:'WebGPU is unavailable. Use an up-to-date Chrome or Edge with hardware acceleration enabled.',waiting:'Awaiting your touch',live:'The network is alive',paused:'Held in time',pause:'Pause',resume:'Resume',sound:'Sound',volume:'Volume',menu:'Shape the experience',close:'Close',language:'Language',anatomy:'Anatomy',threads:'Threads',bloom:'Aurora',taste:'Taste',touch:'Vibration',light:'Light',scent:'Scent',world:'Sensory weather',tide:'Slow tide',storm:'Electric rain',still:'Silence / your impulses only',palette:'Voice of the network',glass:'Glass & air',organ:'Night organ',raw:'Raw pulse',speed:'Model time / real time',quality:'Visual quality',balanced:'Balanced',high:'Full detail',low:'Reduced detail',motion:'Gentle motion',rotation:'Drift',home:'Return to the whole brain',cinema:'Only the work',exitCinema:'Return · Esc',inspect:'Follow a neuron',search:'Cell type or FlyWire ID',noResults:'No matching cells',selectHint:'Touch a point, or search for a cell. Its real connections become visible.',id:'FlyWire ID',cellType:'Cell type',connections:'Outgoing connections',spikes:'Spikes in this moment',focus:'Move closer',silence:'Silence this cell',restore:'Restore this cell',unlocated:'No anatomical anchor; simulated but not drawn.',experiment:'Change the cause',cut:'Disconnect synapses',reconnect:'Reconnect synapses',mute:'Silence the entire network',unmute:'Wake the network',reset:'Return to the same beginning',record:'Capture 30 seconds',recording:'Recording · stop',recorded:'Your recording is ready in Downloads.',recordUnsupported:'Recording is unavailable in this browser.',startFirst:'Start the network first.',about:'Behind the work',aboutTitle:'Real structure. Imagined sound.',about1:'All 138,639 neurons and 15,091,983 directed connection records in the computational dataset participate in the simulation. Those records represent 54,492,922 synapses. No remote computation or hidden small-network fallback is used.',about2:'Every model neuron has a matching anchor in the archived 2024 annotation release. Anchors are not complete neuron shapes or soma locations.',about3:'The model is a browser WebGPU adaptation of a leaky integrate-and-fire network with 0.2 ms steps. Exact signed synapse counts are accumulated with integer atomics. Cell state uses float32. External stimulation is seeded Bernoulli noise; this is not a validated replica of a living fly’s whole-brain activity.',about4:'Every new active light and musical note comes from simulated spikes. Scale, timbre and artistic trails are interpretations. A moving trace indicates a source spike sent along a real connection, not proof that the target fired. Paths do not trace real axons. Only a bounded selection of connections and notes is presented; the full graph is still computed.',about5:'Drag to orbit, scroll to approach. Space pauses; 1–4 give sensory impulses; H hides the interface; Esc returns. Background tabs pause. The performance continues while active, without a prerecorded ending. It is not promised to be mathematically non-repeating.',sources:'Sources & model notes',credits:'Concept: Miku, Skädä & Sirpa · Built by Sirpa · FlyWire v783',neurons:'neurons in the model',synapses:'synapses represented',active:'firing cells',rate:'model seconds / real second',export:'Export session events',error:'The performance paused',reload:'Reload',notice:'Anatomical data · simulated activity · artistic sound',downloadHelp:'No Python or computation server needed. Windows launcher serves the static files on localhost.',deviceLost:'The GPU connection was lost. Reload to begin again.',autoPause:'Paused while the tab was in the background.',inputSent:'A sensory impulse entered the network.',logBound:'The last 2,000 control events are retained; truncated logs are marked.',dataError:'The data could not be verified. Reload or extract the complete package.',fullNetwork:'Whole computational network',viewHint:'Drag to orbit · scroll to approach',track:'The sound of a brain',allQuiet:'The model is silent; existing echoes decay.',webgpuTest:'GPU kernel validated',noAudio:'Continue without audio',modelStep:'Model time',incoming:'Incoming connections',mutedTag:'Silenced',note:'Last sounding cell'},
- fi:{loadTitle:'Kokonaiset aivot. Hetki vielä.',loadGoal:'138 639 neuronia · 54,5 miljoonaa synapsia edustettuna',loadHint:'Esitys alkaa automaattisesti. Ääni on aluksi pois.',loadData:'Aivodataa vastaanotettu',loadStructure:'Luetaan verkon rakennetta',loadConnections:'Ladataan neuronien välisiä yhteyksiä',loadPositions:'Asetetaan neuronit aivokartalle',loadInputs:'Ladataan aistireittejä',loadLabels:'Luetaan neuronien tunnisteita',loadVerify:'Varmennetaan aineiston eheys',loadStart:'Käynnistetään hermosimulaatiota',soundOn:'Ääni päälle',soundOff:'Mykistä ääni',colour:'Värimaailma',aurora:'Revontulet',prism:'Prisma',ember:'Hiillos',colourNote:'Värit erottelevat sijainteja ja signaalityyppejä taiteellisesti, eivät kuvaa biologisia värejä.',tag:'Elävä kytkentäkartta',title:'AIVOJEN\nSISÄLLÄ.',intro:'Yhdet aivot. Miljoonia yhteyksiä.\nLoputon kohtaaminen sähkön kanssa.',enter:'Astu elävään verkkoon',quiet:'Astu sisään ilman ääntä',loading:'Valmistellaan soitinta',ready:'Koko verkko on valmis.',requirements:'Ajantasainen WebGPU-selain ja tehokas näytönohjain. Kaikki laskenta tapahtuu omalla laitteellasi.',local:'Avaa tämä teos HTTPS- tai localhost-osoitteesta ajantasaisella WebGPU-selaimella.',download:'Lataa erillinen selainversio',unsupported:'WebGPU ei ole käytettävissä. Käytä ajantasaista Chromea tai Edgeä, jossa laitteistokiihdytys on päällä.',waiting:'Odottaa kosketustasi',live:'Verkko elää',paused:'Pysäytetty hetki',pause:'Tauko',resume:'Jatka',sound:'Ääni',volume:'Voimakkuus',menu:'Muovaa kokemusta',close:'Sulje',language:'Kieli',anatomy:'Anatomia',threads:'Säikeet',bloom:'Revontulet',taste:'Maku',touch:'Värähtely',light:'Valo',scent:'Tuoksu',world:'Aistimaailman sää',tide:'Hidas vuorovesi',storm:'Sähköinen sade',still:'Hiljaisuus / vain omat ärsykkeet',palette:'Verkon ääni',glass:'Lasi ja ilma',organ:'Yöurut',raw:'Raakapulssi',speed:'Malliaika / todellinen aika',quality:'Kuvan tarkkuus',balanced:'Tasapainoinen',high:'Täysi tarkkuus',low:'Kevennetty',motion:'Rauhallinen liike',rotation:'Hidas kierto',home:'Takaisin koko aivoihin',cinema:'Vain teos',exitCinema:'Palaa · Esc',inspect:'Seuraa neuronia',search:'Solutyyppi tai FlyWire-tunniste',noResults:'Ei vastaavia soluja',selectHint:'Kosketa pistettä tai hae solua. Sen todelliset yhteydet tulevat näkyviin.',id:'FlyWire-tunniste',cellType:'Solutyyppi',connections:'Lähtevät yhteydet',spikes:'Tämän hetken piikit',focus:'Lähemmäs',silence:'Vaimenna tämä solu',restore:'Palauta tämä solu',unlocated:'Ankkuripaikka puuttuu; mukana laskennassa, ei kuvassa.',experiment:'Muuta syytä',cut:'Katkaise synapsiyhteydet',reconnect:'Palauta synapsiyhteydet',mute:'Vaimenna koko verkko',unmute:'Herätä verkko',reset:'Takaisin samaan alkuun',record:'Tallenna 30 sekuntia',recording:'Tallennetaan · lopeta',recorded:'Tallenne on valmis Lataukset-kansiossa.',recordUnsupported:'Tämä selain ei tue tallennusta.',startFirst:'Käynnistä verkko ensin.',about:'Teoksen takana',aboutTitle:'Oikea rakenne. Kuviteltu ääni.',about1:'Laskenta-aineiston kaikki 138 639 neuronia ja 15 091 983 suunnattua yhteysriviä osallistuvat simulaatioon. Ne edustavat 54 492 922 synapsia. Erillistä laskentapalvelua tai piilotettua pikkupiirivaihtoehtoa ei käytetä.',about2:'Jokaiselle mallin neuronille löytyy ankkuripiste vuoden 2024 arkistoidusta annotaatioaineistosta. Ankkurit eivät ole täydellisiä neuronimuotoja tai solukeskuksia.',about3:'Malli on selaimen WebGPU:lle sovitettu LIF-hermoverkko, jonka aika-askel on 0,2 ms. Tarkat etumerkilliset synapsimäärät kootaan atomisella kokonaislukulaskennalla. Solutilat käyttävät float32-tarkkuutta. Aistisyöte on siemenellinen Bernoulli-kohina; tämä ei ole validoitu toisinto elävän kärpäsen koko aivojen toiminnasta.',about4:'Jokainen uusi aktiivinen valo ja sävel syntyy simulaation piikeistä. Asteikko, sointiväri ja taiteelliset valojäljet ovat tulkintoja. Kulkeva jälki näyttää lähdesolun piikin välittymisen oikeaa yhteyttä pitkin, ei todista kohdesolun piikkiä. Polut eivät jäljitä oikeita aksoneja. Kuvassa ja äänessä esitetään rajattu otos, vaikka koko verkko lasketaan.',about5:'Vedä pyörittääksesi, vieritä lähentyäksesi. Välilyönti tauottaa, 1–4 antavat aistiärsykkeitä, H piilottaa käyttöliittymän ja Esc palauttaa sen. Taustavälilehti tauottaa. Esitys jatkuu aktiivisena ilman ennalta tehtyä loppua. Matemaattista toistumattomuutta ei luvata.',sources:'Lähteet ja mallin tiedot',credits:'Konsepti: Miku, Skädä ja Sirpa · Toteutus: Sirpa · FlyWire v783',neurons:'neuronia mallissa',synapses:'synapsia edustettuna',active:'aktivoitunutta solua',rate:'mallisekuntia / todellinen sekunti',export:'Vie tapahtumaloki',error:'Esitys keskeytyi',reload:'Lataa uudelleen',notice:'Anatominen aineisto · simuloitu toiminta · taiteellinen ääni',downloadHelp:'Ei Pythonia tai laskentapalvelua. Windows-käynnistin tarjoilee staattiset tiedostot localhostissa.',deviceLost:'Yhteys näytönohjaimeen katkesi. Lataa sivu uudelleen.',autoPause:'Tauotettu taustavälilehden ajaksi.',inputSent:'Aistiärsyke saapui verkkoon.',logBound:'Viimeiset 2 000 ohjaustapahtumaa säilytetään; katkaistu loki merkitään.',dataError:'Aineistoa ei voitu varmentaa. Lataa uudelleen tai pura koko paketti.',fullNetwork:'Koko laskennallinen verkko',viewHint:'Vedä pyörittääksesi · vieritä lähentyäksesi',track:'Aivojen ääni',allQuiet:'Malli on hiljaa; aiemmat kaiut vaimenevat.',webgpuTest:'GPU-ydin varmennettu',noAudio:'Jatka ilman ääntä',modelStep:'Malliaika',incoming:'Saapuvat yhteydet',mutedTag:'Vaimennettu',note:'Viimeksi soinut solu'}
-} satisfies Record<Language,Record<string,string>>;
-export type Key=keyof typeof translations.en;
-export function chooseLanguage(languages:readonly string[],saved:string|null):Language {if(saved==='fi'||saved==='en')return saved;return 'en';}
-let saved:string|null=null;try{saved=localStorage.getItem('brain-concert-language');}catch{}
-export let language:Language=chooseLanguage(typeof navigator!=='undefined'?navigator.languages:[],saved);
-export const t=(key:Key)=>translations[language][key];
-export function setLanguage(value:Language){language=value;try{localStorage.setItem('brain-concert-language',value);}catch{}document.documentElement.lang=value;document.querySelectorAll<HTMLElement>('[data-t]').forEach(el=>el.textContent=t(el.dataset.t as Key));document.querySelectorAll<HTMLInputElement>('[data-placeholder]').forEach(el=>el.placeholder=t(el.dataset.placeholder as Key));document.querySelectorAll<HTMLElement>('[data-label]').forEach(el=>el.setAttribute('aria-label',t(el.dataset.label as Key)));}
+export type Language = 'fi' | 'en';
+export const translations = {
+  en: {
+    loadTitle: 'A whole brain. Coming together.',
+    loadGoal: '138,639 neurons · 54.5 million synapses represented',
+    loadHint: 'The experience starts automatically, with sound off.',
+    loadData: 'Brain data received',
+    loadStructure: 'Reading the network structure',
+    loadConnections: 'Loading connections between neurons',
+    loadPositions: 'Placing neurons in the brain',
+    loadInputs: 'Loading sensory pathways',
+    loadLabels: 'Reading neuron identities',
+    loadVerify: 'Checking data integrity',
+    loadStart: 'Starting the neural simulation',
+    soundOn: 'Enable sound',
+    soundOff: 'Mute sound',
+    colour: 'Colour palette',
+    aurora: 'Aurora',
+    prism: 'Prism',
+    ember: 'Ember',
+    colourNote:
+      'Colours distinguish positions and signal types artistically, not measured biological colours.',
+    tag: 'A living connectome',
+    title: 'INSIDE\nTHE SIGNAL.',
+    intro: 'One brain. Millions of connections.\nAn endless encounter with electricity.',
+    enter: 'Enter the living network',
+    quiet: 'Enter without sound',
+    loading: 'Preparing the instrument',
+    ready: 'The whole network is ready.',
+    requirements:
+      'A modern WebGPU browser and a capable graphics card. All computation happens on your device.',
+    local: 'Serve this experience over HTTPS or localhost in a modern WebGPU browser.',
+    download: 'Download standalone edition',
+    unsupported:
+      'WebGPU is unavailable. Use an up-to-date Chrome or Edge with hardware acceleration enabled.',
+    waiting: 'Awaiting your touch',
+    live: 'The network is alive',
+    paused: 'Held in time',
+    pause: 'Pause',
+    resume: 'Resume',
+    sound: 'Sound',
+    volume: 'Volume',
+    menu: 'Shape the experience',
+    close: 'Close',
+    language: 'Language',
+    anatomy: 'Anatomy',
+    threads: 'Threads',
+    bloom: 'Aurora',
+    taste: 'Taste',
+    touch: 'Vibration',
+    light: 'Light',
+    scent: 'Scent',
+    world: 'Sensory weather',
+    tide: 'Slow tide',
+    storm: 'Electric rain',
+    still: 'Silence / your impulses only',
+    palette: 'Voice of the network',
+    glass: 'Glass & air',
+    organ: 'Night organ',
+    raw: 'Raw pulse',
+    speed: 'Model time / real time',
+    quality: 'Visual quality',
+    balanced: 'Balanced',
+    high: 'Full detail',
+    low: 'Reduced detail',
+    motion: 'Gentle motion',
+    rotation: 'Drift',
+    home: 'Return to the whole brain',
+    cinema: 'Only the work',
+    exitCinema: 'Return · Esc',
+    inspect: 'Follow a neuron',
+    search: 'Cell type or FlyWire ID',
+    noResults: 'No matching cells',
+    selectHint: 'Touch a point, or search for a cell. Its real connections become visible.',
+    id: 'FlyWire ID',
+    cellType: 'Cell type',
+    connections: 'Outgoing connections',
+    spikes: 'Spikes in this moment',
+    focus: 'Move closer',
+    silence: 'Silence this cell',
+    restore: 'Restore this cell',
+    unlocated: 'No anatomical anchor; simulated but not drawn.',
+    experiment: 'Change the cause',
+    cut: 'Disconnect synapses',
+    reconnect: 'Reconnect synapses',
+    mute: 'Silence the entire network',
+    unmute: 'Wake the network',
+    reset: 'Return to the same beginning',
+    record: 'Capture 30 seconds',
+    recording: 'Recording · stop',
+    recorded: 'Your recording is ready in Downloads.',
+    recordUnsupported: 'Recording is unavailable in this browser.',
+    startFirst: 'Start the network first.',
+    about: 'Behind the work',
+    aboutTitle: 'Real structure. Imagined sound.',
+    about1:
+      'All 138,639 neurons and 15,091,983 directed connection records in the computational dataset participate in the simulation. Those records represent 54,492,922 synapses. No remote computation or hidden small-network fallback is used.',
+    about2:
+      'Every model neuron has a matching anchor in the archived 2024 annotation release. Anchors are not complete neuron shapes or soma locations.',
+    about3:
+      'The model is a browser WebGPU adaptation of a leaky integrate-and-fire network with 0.2 ms steps. Exact signed synapse counts are accumulated with integer atomics. Cell state uses float32. External stimulation is seeded Bernoulli noise; this is not a validated replica of a living fly’s whole-brain activity.',
+    about4:
+      'Every new active light and musical note comes from simulated spikes. Scale, timbre and artistic trails are interpretations. A moving trace indicates a source spike sent along a real connection, not proof that the target fired. Paths do not trace real axons. Only a bounded selection of connections and notes is presented; the full graph is still computed.',
+    about5:
+      'Drag to orbit, scroll to approach. Space pauses; 1–4 give sensory impulses; H hides the interface; Esc returns. Background tabs pause. The performance continues while active, without a prerecorded ending. It is not promised to be mathematically non-repeating.',
+    sources: 'Sources & model notes',
+    credits: 'Concept: Miku, Skädä & Sirpa · Built by Sirpa · FlyWire v783',
+    neurons: 'neurons in the model',
+    synapses: 'synapses represented',
+    active: 'firing cells',
+    rate: 'model seconds / real second',
+    export: 'Export session events',
+    error: 'The performance paused',
+    reload: 'Reload',
+    notice: 'Anatomical data · simulated activity · artistic sound',
+    downloadHelp:
+      'No Python or computation server needed. Windows launcher serves the static files on localhost.',
+    deviceLost: 'The GPU connection was lost. Reload to begin again.',
+    autoPause: 'Paused while the tab was in the background.',
+    inputSent: 'A sensory impulse entered the network.',
+    logBound: 'The last 2,000 control events are retained; truncated logs are marked.',
+    dataError: 'The data could not be verified. Reload or extract the complete package.',
+    fullNetwork: 'Whole computational network',
+    viewHint: 'Drag to orbit · scroll to approach',
+    track: 'The sound of a brain',
+    allQuiet: 'The model is silent; existing echoes decay.',
+    webgpuTest: 'GPU kernel validated',
+    noAudio: 'Continue without audio',
+    modelStep: 'Model time',
+    incoming: 'Incoming connections',
+    mutedTag: 'Silenced',
+    note: 'Last sounding cell',
+  },
+  fi: {
+    loadTitle: 'Kokonaiset aivot. Hetki vielä.',
+    loadGoal: '138 639 neuronia · 54,5 miljoonaa synapsia edustettuna',
+    loadHint: 'Esitys alkaa automaattisesti. Ääni on aluksi pois.',
+    loadData: 'Aivodataa vastaanotettu',
+    loadStructure: 'Luetaan verkon rakennetta',
+    loadConnections: 'Ladataan neuronien välisiä yhteyksiä',
+    loadPositions: 'Asetetaan neuronit aivokartalle',
+    loadInputs: 'Ladataan aistireittejä',
+    loadLabels: 'Luetaan neuronien tunnisteita',
+    loadVerify: 'Varmennetaan aineiston eheys',
+    loadStart: 'Käynnistetään hermosimulaatiota',
+    soundOn: 'Ääni päälle',
+    soundOff: 'Mykistä ääni',
+    colour: 'Värimaailma',
+    aurora: 'Revontulet',
+    prism: 'Prisma',
+    ember: 'Hiillos',
+    colourNote:
+      'Värit erottelevat sijainteja ja signaalityyppejä taiteellisesti, eivät kuvaa biologisia värejä.',
+    tag: 'Elävä kytkentäkartta',
+    title: 'AIVOJEN\nSISÄLLÄ.',
+    intro: 'Yhdet aivot. Miljoonia yhteyksiä.\nLoputon kohtaaminen sähkön kanssa.',
+    enter: 'Astu elävään verkkoon',
+    quiet: 'Astu sisään ilman ääntä',
+    loading: 'Valmistellaan soitinta',
+    ready: 'Koko verkko on valmis.',
+    requirements:
+      'Ajantasainen WebGPU-selain ja tehokas näytönohjain. Kaikki laskenta tapahtuu omalla laitteellasi.',
+    local: 'Avaa tämä teos HTTPS- tai localhost-osoitteesta ajantasaisella WebGPU-selaimella.',
+    download: 'Lataa erillinen selainversio',
+    unsupported:
+      'WebGPU ei ole käytettävissä. Käytä ajantasaista Chromea tai Edgeä, jossa laitteistokiihdytys on päällä.',
+    waiting: 'Odottaa kosketustasi',
+    live: 'Verkko elää',
+    paused: 'Pysäytetty hetki',
+    pause: 'Tauko',
+    resume: 'Jatka',
+    sound: 'Ääni',
+    volume: 'Voimakkuus',
+    menu: 'Muovaa kokemusta',
+    close: 'Sulje',
+    language: 'Kieli',
+    anatomy: 'Anatomia',
+    threads: 'Säikeet',
+    bloom: 'Revontulet',
+    taste: 'Maku',
+    touch: 'Värähtely',
+    light: 'Valo',
+    scent: 'Tuoksu',
+    world: 'Aistimaailman sää',
+    tide: 'Hidas vuorovesi',
+    storm: 'Sähköinen sade',
+    still: 'Hiljaisuus / vain omat ärsykkeet',
+    palette: 'Verkon ääni',
+    glass: 'Lasi ja ilma',
+    organ: 'Yöurut',
+    raw: 'Raakapulssi',
+    speed: 'Malliaika / todellinen aika',
+    quality: 'Kuvan tarkkuus',
+    balanced: 'Tasapainoinen',
+    high: 'Täysi tarkkuus',
+    low: 'Kevennetty',
+    motion: 'Rauhallinen liike',
+    rotation: 'Hidas kierto',
+    home: 'Takaisin koko aivoihin',
+    cinema: 'Vain teos',
+    exitCinema: 'Palaa · Esc',
+    inspect: 'Seuraa neuronia',
+    search: 'Solutyyppi tai FlyWire-tunniste',
+    noResults: 'Ei vastaavia soluja',
+    selectHint: 'Kosketa pistettä tai hae solua. Sen todelliset yhteydet tulevat näkyviin.',
+    id: 'FlyWire-tunniste',
+    cellType: 'Solutyyppi',
+    connections: 'Lähtevät yhteydet',
+    spikes: 'Tämän hetken piikit',
+    focus: 'Lähemmäs',
+    silence: 'Vaimenna tämä solu',
+    restore: 'Palauta tämä solu',
+    unlocated: 'Ankkuripaikka puuttuu; mukana laskennassa, ei kuvassa.',
+    experiment: 'Muuta syytä',
+    cut: 'Katkaise synapsiyhteydet',
+    reconnect: 'Palauta synapsiyhteydet',
+    mute: 'Vaimenna koko verkko',
+    unmute: 'Herätä verkko',
+    reset: 'Takaisin samaan alkuun',
+    record: 'Tallenna 30 sekuntia',
+    recording: 'Tallennetaan · lopeta',
+    recorded: 'Tallenne on valmis Lataukset-kansiossa.',
+    recordUnsupported: 'Tämä selain ei tue tallennusta.',
+    startFirst: 'Käynnistä verkko ensin.',
+    about: 'Teoksen takana',
+    aboutTitle: 'Oikea rakenne. Kuviteltu ääni.',
+    about1:
+      'Laskenta-aineiston kaikki 138 639 neuronia ja 15 091 983 suunnattua yhteysriviä osallistuvat simulaatioon. Ne edustavat 54 492 922 synapsia. Erillistä laskentapalvelua tai piilotettua pikkupiirivaihtoehtoa ei käytetä.',
+    about2:
+      'Jokaiselle mallin neuronille löytyy ankkuripiste vuoden 2024 arkistoidusta annotaatioaineistosta. Ankkurit eivät ole täydellisiä neuronimuotoja tai solukeskuksia.',
+    about3:
+      'Malli on selaimen WebGPU:lle sovitettu LIF-hermoverkko, jonka aika-askel on 0,2 ms. Tarkat etumerkilliset synapsimäärät kootaan atomisella kokonaislukulaskennalla. Solutilat käyttävät float32-tarkkuutta. Aistisyöte on siemenellinen Bernoulli-kohina; tämä ei ole validoitu toisinto elävän kärpäsen koko aivojen toiminnasta.',
+    about4:
+      'Jokainen uusi aktiivinen valo ja sävel syntyy simulaation piikeistä. Asteikko, sointiväri ja taiteelliset valojäljet ovat tulkintoja. Kulkeva jälki näyttää lähdesolun piikin välittymisen oikeaa yhteyttä pitkin, ei todista kohdesolun piikkiä. Polut eivät jäljitä oikeita aksoneja. Kuvassa ja äänessä esitetään rajattu otos, vaikka koko verkko lasketaan.',
+    about5:
+      'Vedä pyörittääksesi, vieritä lähentyäksesi. Välilyönti tauottaa, 1–4 antavat aistiärsykkeitä, H piilottaa käyttöliittymän ja Esc palauttaa sen. Taustavälilehti tauottaa. Esitys jatkuu aktiivisena ilman ennalta tehtyä loppua. Matemaattista toistumattomuutta ei luvata.',
+    sources: 'Lähteet ja mallin tiedot',
+    credits: 'Konsepti: Miku, Skädä ja Sirpa · Toteutus: Sirpa · FlyWire v783',
+    neurons: 'neuronia mallissa',
+    synapses: 'synapsia edustettuna',
+    active: 'aktivoitunutta solua',
+    rate: 'mallisekuntia / todellinen sekunti',
+    export: 'Vie tapahtumaloki',
+    error: 'Esitys keskeytyi',
+    reload: 'Lataa uudelleen',
+    notice: 'Anatominen aineisto · simuloitu toiminta · taiteellinen ääni',
+    downloadHelp:
+      'Ei Pythonia tai laskentapalvelua. Windows-käynnistin tarjoilee staattiset tiedostot localhostissa.',
+    deviceLost: 'Yhteys näytönohjaimeen katkesi. Lataa sivu uudelleen.',
+    autoPause: 'Tauotettu taustavälilehden ajaksi.',
+    inputSent: 'Aistiärsyke saapui verkkoon.',
+    logBound: 'Viimeiset 2 000 ohjaustapahtumaa säilytetään; katkaistu loki merkitään.',
+    dataError: 'Aineistoa ei voitu varmentaa. Lataa uudelleen tai pura koko paketti.',
+    fullNetwork: 'Koko laskennallinen verkko',
+    viewHint: 'Vedä pyörittääksesi · vieritä lähentyäksesi',
+    track: 'Aivojen ääni',
+    allQuiet: 'Malli on hiljaa; aiemmat kaiut vaimenevat.',
+    webgpuTest: 'GPU-ydin varmennettu',
+    noAudio: 'Jatka ilman ääntä',
+    modelStep: 'Malliaika',
+    incoming: 'Saapuvat yhteydet',
+    mutedTag: 'Vaimennettu',
+    note: 'Viimeksi soinut solu',
+  },
+} satisfies Record<Language, Record<string, string>>;
+export type Key = keyof typeof translations.en;
+export function chooseLanguage(languages: readonly string[], saved: string | null): Language {
+  if (saved === 'fi' || saved === 'en') return saved;
+  return 'en';
+}
+let saved: string | null = null;
+try {
+  saved = localStorage.getItem('brain-concert-language');
+} catch {}
+export let language: Language = chooseLanguage(
+  typeof navigator !== 'undefined' ? navigator.languages : [],
+  saved,
+);
+export const t = (key: Key) => translations[language][key];
+export function setLanguage(value: Language) {
+  language = value;
+  try {
+    localStorage.setItem('brain-concert-language', value);
+  } catch {}
+  document.documentElement.lang = value;
+  document
+    .querySelectorAll<HTMLElement>('[data-t]')
+    .forEach((el) => (el.textContent = t(el.dataset.t as Key)));
+  document
+    .querySelectorAll<HTMLInputElement>('[data-placeholder]')
+    .forEach((el) => (el.placeholder = t(el.dataset.placeholder as Key)));
+  document
+    .querySelectorAll<HTMLElement>('[data-label]')
+    .forEach((el) => el.setAttribute('aria-label', t(el.dataset.label as Key)));
+}

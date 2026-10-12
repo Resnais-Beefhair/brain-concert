@@ -1,15 +1,189 @@
-import type {Network,GPUFrame} from './gpu';
-export interface Note {cell:number;midi:number;velocity:number;voice:number;}
+import type { Network, GPUFrame } from './gpu';
+export interface Note {
+  cell: number;
+  midi: number;
+  velocity: number;
+  voice: number;
+}
 export class Sound {
- context:AudioContext|null=null;analyser:AnalyserNode|null=null;stream:MediaStreamAudioDestinationNode|null=null;private master:GainNode|null=null;private bus:GainNode|null=null;private oscillators=new Set<OscillatorNode>();private last=new Float64Array(8).fill(-1e6);readonly groups:Uint8Array;enabled=false;volume=.45;playing=false;palette='glass';notes=0;lastCell=-1;
- constructor(readonly net:Network){this.groups=new Uint8Array(net.n);for(let i=0;i<net.n;i++){const p=i*4;this.groups[i]=(net.inputs[i]&1)?6:(net.inputs[i]&2)?7:Math.min(5,(net.positions[p+1]>12?4:net.positions[p+1]>-18?2:0)+(net.positions[p]>0?1:0));}}
- async start(){if(!this.context){const c=this.context=new AudioContext({latencyHint:'interactive'});this.bus=c.createGain();const compressor=c.createDynamicsCompressor();compressor.threshold.value=-18;compressor.knee.value=18;compressor.ratio.value=8;compressor.attack.value=.004;compressor.release.value=.25;this.bus.connect(compressor);const reverb=c.createConvolver(),impulse=c.createBuffer(2,c.sampleRate*2.7,c.sampleRate);let r=714;for(let ch=0;ch<2;ch++){let smooth=0;const a=impulse.getChannelData(ch);for(let i=0;i<a.length;i++){r=(Math.imul(r,1664525)+1013904223)>>>0;smooth=.65*smooth+.35*(r/4294967296*2-1);a[i]=smooth*(1-i/a.length)**4;}}reverb.buffer=impulse;const wet=c.createGain();wet.gain.value=.23;this.bus.connect(reverb);reverb.connect(wet);wet.connect(compressor);this.master=c.createGain();this.master.gain.value=0;compressor.connect(this.master);this.analyser=c.createAnalyser();this.analyser.fftSize=512;this.master.connect(this.analyser);this.analyser.connect(c.destination);this.stream=c.createMediaStreamDestination();this.analyser.connect(this.stream);}await this.context.resume();this.playing=true;this.apply();}
- apply(){if(this.context&&this.master)this.master.gain.setTargetAtTime(this.enabled&&this.playing?this.volume:0,this.context.currentTime,.08);}
- reset(){this.last.fill(-1e6);this.lastCell=-1;for(const o of this.oscillators)try{o.stop();}catch{}this.oscillators.clear();}
- schedule(frame:GPUFrame):Note[]{const best=new Int32Array(8).fill(-1);for(let i=0;i<this.net.n;i++)if(frame.counts[i]){const v=this.groups[i],b=best[v];if(b<0||frame.counts[i]>frame.counts[b]||(frame.counts[i]===frame.counts[b]&&((i*31+frame.step)%103)>((b*31+frame.step)%103)))best[v]=i;}
- const notes:Note[]=[];for(let v=0;v<8;v++){const cell=best[v];if(cell<0||frame.timeMs-this.last[v]<60)continue;this.last[v]=frame.timeMs;const scale=this.palette==='organ'?[0,2,3,7,10]:this.palette==='raw'?[0,1,3,5,6,8,10]:[0,2,5,7,9];let hash=0;for(const ch of this.net.ids[cell])hash=(Math.imul(hash,31)+ch.charCodeAt(0))>>>0;notes.push({cell,voice:v,midi:36+Math.min(2,Math.floor(v/2))*12+scale[hash%scale.length],velocity:Math.min(.8,.25+Math.log2(frame.counts[cell]+1)*.16)});}this.play(notes);return notes;}
- private play(notes:Note[]){const c=this.context;if(!c||c.state!=='running'||!this.enabled||!this.playing||!this.bus)return;for(const note of notes){if(this.oscillators.size>=72)break;const t=c.currentTime+.025,duration=this.palette==='organ'?2:this.palette==='raw'?.25:1.5;const env=c.createGain(),pan=c.createStereoPanner();pan.pan.value=Math.max(-.85,Math.min(.85,this.net.positions[note.cell*4]/100));env.connect(pan);pan.connect(this.bus);env.gain.setValueAtTime(0,t);env.gain.linearRampToValueAtTime(note.velocity*.2,t+.02);env.gain.exponentialRampToValueAtTime(.0001,t+duration);let remaining=2;for(let h=0;h<2;h++){const o=c.createOscillator(),g=c.createGain();o.type=this.palette==='raw'?'triangle':'sine';o.frequency.value=440*2**((note.midi-69)/12)*(h===0?1:2.003);g.gain.value=h===0?1:.16;o.connect(g);g.connect(env);this.oscillators.add(o);o.onended=()=>{this.oscillators.delete(o);o.disconnect();g.disconnect();if(--remaining===0){env.disconnect();pan.disconnect();}};o.start(t);o.stop(t+duration+.1);}this.notes++;this.lastCell=note.cell;}}
- waveform(){const a=new Float32Array(512);this.analyser?.getFloatTimeDomainData(a);return a;}
- get voices(){return this.oscillators.size;}
- dispose(){this.reset();void this.context?.close();}
+  context: AudioContext | null = null;
+  analyser: AnalyserNode | null = null;
+  stream: MediaStreamAudioDestinationNode | null = null;
+  private master: GainNode | null = null;
+  private bus: GainNode | null = null;
+  private oscillators = new Set<OscillatorNode>();
+  private last = new Float64Array(8).fill(-1e6);
+  readonly groups: Uint8Array;
+  enabled = false;
+  volume = 0.45;
+  playing = false;
+  palette = 'glass';
+  notes = 0;
+  lastCell = -1;
+  constructor(readonly net: Network) {
+    this.groups = new Uint8Array(net.n);
+    for (let i = 0; i < net.n; i++) {
+      const p = i * 4;
+      this.groups[i] =
+        net.inputs[i] & 1
+          ? 6
+          : net.inputs[i] & 2
+            ? 7
+            : Math.min(
+                5,
+                (net.positions[p + 1] > 12 ? 4 : net.positions[p + 1] > -18 ? 2 : 0) +
+                  (net.positions[p] > 0 ? 1 : 0),
+              );
+    }
+  }
+  async start() {
+    if (!this.context) {
+      const c = (this.context = new AudioContext({ latencyHint: 'interactive' }));
+      this.bus = c.createGain();
+      const compressor = c.createDynamicsCompressor();
+      compressor.threshold.value = -18;
+      compressor.knee.value = 18;
+      compressor.ratio.value = 8;
+      compressor.attack.value = 0.004;
+      compressor.release.value = 0.25;
+      this.bus.connect(compressor);
+      const reverb = c.createConvolver(),
+        impulse = c.createBuffer(2, c.sampleRate * 2.7, c.sampleRate);
+      let r = 714;
+      for (let ch = 0; ch < 2; ch++) {
+        let smooth = 0;
+        const a = impulse.getChannelData(ch);
+        for (let i = 0; i < a.length; i++) {
+          r = (Math.imul(r, 1664525) + 1013904223) >>> 0;
+          smooth = 0.65 * smooth + 0.35 * ((r / 4294967296) * 2 - 1);
+          a[i] = smooth * (1 - i / a.length) ** 4;
+        }
+      }
+      reverb.buffer = impulse;
+      const wet = c.createGain();
+      wet.gain.value = 0.23;
+      this.bus.connect(reverb);
+      reverb.connect(wet);
+      wet.connect(compressor);
+      this.master = c.createGain();
+      this.master.gain.value = 0;
+      compressor.connect(this.master);
+      this.analyser = c.createAnalyser();
+      this.analyser.fftSize = 512;
+      this.master.connect(this.analyser);
+      this.analyser.connect(c.destination);
+      this.stream = c.createMediaStreamDestination();
+      this.analyser.connect(this.stream);
+    }
+    await this.context.resume();
+    this.playing = true;
+    this.apply();
+  }
+  apply() {
+    if (this.context && this.master)
+      this.master.gain.setTargetAtTime(
+        this.enabled && this.playing ? this.volume : 0,
+        this.context.currentTime,
+        0.08,
+      );
+  }
+  reset() {
+    this.last.fill(-1e6);
+    this.lastCell = -1;
+    for (const o of this.oscillators)
+      try {
+        o.stop();
+      } catch {}
+    this.oscillators.clear();
+  }
+  schedule(frame: GPUFrame): Note[] {
+    const best = new Int32Array(8).fill(-1);
+    for (let i = 0; i < this.net.n; i++)
+      if (frame.counts[i]) {
+        const v = this.groups[i],
+          b = best[v];
+        if (
+          b < 0 ||
+          frame.counts[i] > frame.counts[b] ||
+          (frame.counts[i] === frame.counts[b] &&
+            (i * 31 + frame.step) % 103 > (b * 31 + frame.step) % 103)
+        )
+          best[v] = i;
+      }
+    const notes: Note[] = [];
+    for (let v = 0; v < 8; v++) {
+      const cell = best[v];
+      if (cell < 0 || frame.timeMs - this.last[v] < 60) continue;
+      this.last[v] = frame.timeMs;
+      const scale =
+        this.palette === 'organ'
+          ? [0, 2, 3, 7, 10]
+          : this.palette === 'raw'
+            ? [0, 1, 3, 5, 6, 8, 10]
+            : [0, 2, 5, 7, 9];
+      let hash = 0;
+      for (const ch of this.net.ids[cell]) hash = (Math.imul(hash, 31) + ch.charCodeAt(0)) >>> 0;
+      notes.push({
+        cell,
+        voice: v,
+        midi: 36 + Math.min(2, Math.floor(v / 2)) * 12 + scale[hash % scale.length],
+        velocity: Math.min(0.8, 0.25 + Math.log2(frame.counts[cell] + 1) * 0.16),
+      });
+    }
+    this.play(notes);
+    return notes;
+  }
+  private play(notes: Note[]) {
+    const c = this.context;
+    if (!c || c.state !== 'running' || !this.enabled || !this.playing || !this.bus) return;
+    for (const note of notes) {
+      if (this.oscillators.size >= 72) break;
+      const t = c.currentTime + 0.025,
+        duration = this.palette === 'organ' ? 2 : this.palette === 'raw' ? 0.25 : 1.5;
+      const env = c.createGain(),
+        pan = c.createStereoPanner();
+      pan.pan.value = Math.max(-0.85, Math.min(0.85, this.net.positions[note.cell * 4] / 100));
+      env.connect(pan);
+      pan.connect(this.bus);
+      env.gain.setValueAtTime(0, t);
+      env.gain.linearRampToValueAtTime(note.velocity * 0.2, t + 0.02);
+      env.gain.exponentialRampToValueAtTime(0.0001, t + duration);
+      let remaining = 2;
+      for (let h = 0; h < 2; h++) {
+        const o = c.createOscillator(),
+          g = c.createGain();
+        o.type = this.palette === 'raw' ? 'triangle' : 'sine';
+        o.frequency.value = 440 * 2 ** ((note.midi - 69) / 12) * (h === 0 ? 1 : 2.003);
+        g.gain.value = h === 0 ? 1 : 0.16;
+        o.connect(g);
+        g.connect(env);
+        this.oscillators.add(o);
+        o.onended = () => {
+          this.oscillators.delete(o);
+          o.disconnect();
+          g.disconnect();
+          if (--remaining === 0) {
+            env.disconnect();
+            pan.disconnect();
+          }
+        };
+        o.start(t);
+        o.stop(t + duration + 0.1);
+      }
+      this.notes++;
+      this.lastCell = note.cell;
+    }
+  }
+  waveform() {
+    const a = new Float32Array(512);
+    this.analyser?.getFloatTimeDomainData(a);
+    return a;
+  }
+  get voices() {
+    return this.oscillators.size;
+  }
+  dispose() {
+    this.reset();
+    void this.context?.close();
+  }
 }

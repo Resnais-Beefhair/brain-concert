@@ -1,10 +1,117 @@
-import {sha256} from '@noble/hashes/sha2.js';import {bytesToHex} from '@noble/hashes/utils.js';import type {Network} from './gpu';
-export interface Manifest {schemaVersion:number;neurons:number;edgeRows:number;synapses:number;positionedNeurons:number;unpositionedIds:string[];inputCounts:Record<string,number>;totalBytes:number;files:Record<string,{bytes:number;sha256:string}>;}
-export interface LoadProgress {bytes:number;total:number;file:string;phase:'download'|'verify';}
-export async function loadNetwork(progress:(fraction:number,detail?:LoadProgress)=>void){const r=await fetch('./data/manifest.json');if(!r.ok)throw Error('DATA_MANIFEST');const manifest:Manifest=await r.json();if(manifest.schemaVersion!==2)throw Error('DATA_SCHEMA');let loaded=0;const buffers:Record<string,ArrayBuffer>={};
- for(const name of ['offsets.bin','targets.bin','weights.bin','inputs.bin','positions.bin','metadata.json']){const res=await fetch('./data/'+name);if(!res.ok)throw Error('DATA_FETCH '+name);const expected=manifest.files[name].bytes;const bytes=new Uint8Array(expected);let received=0;const report=(phase:'download'|'verify')=>progress((loaded+received)/manifest.totalBytes,{bytes:loaded+received,total:manifest.totalBytes,file:name,phase});report('download');
- if(res.body){const reader=res.body.getReader();try{while(true){const {done,value}=await reader.read();if(done)break;if(received+value.length>expected){await reader.cancel();throw Error('DATA_HASH '+name);}bytes.set(value,received);received+=value.length;report('download');}}finally{reader.releaseLock();}}else{const raw=new Uint8Array(await res.arrayBuffer());if(raw.length!==expected)throw Error('DATA_HASH '+name);bytes.set(raw);received=raw.length;report('download');}
- report('verify');await new Promise(r=>setTimeout(r,0));const b=bytes.buffer;if(received!==expected||bytesToHex(sha256(bytes))!==manifest.files[name].sha256)throw Error('DATA_HASH '+name);buffers[name]=b;loaded+=b.byteLength;await new Promise(r=>setTimeout(r,0));}
- const meta=JSON.parse(new TextDecoder().decode(buffers['metadata.json']));const net:Network={n:manifest.neurons,offsets:new Uint32Array(buffers['offsets.bin']),targets:new Uint32Array(buffers['targets.bin']),weights:new Int32Array(buffers['weights.bin']),inputs:new Uint32Array(buffers['inputs.bin']),positions:new Float32Array(buffers['positions.bin']),ids:meta.ids,labels:meta.labels,classes:meta.classes};validateNetwork(net);return {net,manifest};
+import { sha256 } from '@noble/hashes/sha2.js';
+import { bytesToHex } from '@noble/hashes/utils.js';
+import type { Network } from './gpu';
+export interface Manifest {
+  schemaVersion: number;
+  neurons: number;
+  edgeRows: number;
+  synapses: number;
+  positionedNeurons: number;
+  unpositionedIds: string[];
+  inputCounts: Record<string, number>;
+  totalBytes: number;
+  files: Record<string, { bytes: number; sha256: string }>;
 }
-export function validateNetwork(g:Network){if(!Number.isInteger(g.n)||g.n<1||g.offsets.length!==g.n+1||g.inputs.length!==g.n||g.positions.length!==g.n*4||g.ids.length!==g.n||g.labels.length!==g.n||g.classes.length!==g.n||g.offsets[0]!==0||g.offsets[g.n]!==g.targets.length||g.weights.length!==g.targets.length)throw Error('DATA_SHAPE');for(let i=0;i<g.n;i++){if(g.offsets[i]>g.offsets[i+1]||!/^\d+$/.test(g.ids[i]))throw Error('DATA_NODE');}for(const t of g.targets)if(t>=g.n)throw Error('DATA_TARGET');for(const v of g.positions)if(!Number.isFinite(v))throw Error('DATA_POSITION');}
+export interface LoadProgress {
+  bytes: number;
+  total: number;
+  file: string;
+  phase: 'download' | 'verify';
+}
+export async function loadNetwork(progress: (fraction: number, detail?: LoadProgress) => void) {
+  const r = await fetch('./data/manifest.json');
+  if (!r.ok) throw Error('DATA_MANIFEST');
+  const manifest: Manifest = await r.json();
+  if (manifest.schemaVersion !== 2) throw Error('DATA_SCHEMA');
+  let loaded = 0;
+  const buffers: Record<string, ArrayBuffer> = {};
+  for (const name of [
+    'offsets.bin',
+    'targets.bin',
+    'weights.bin',
+    'inputs.bin',
+    'positions.bin',
+    'metadata.json',
+  ]) {
+    const res = await fetch('./data/' + name);
+    if (!res.ok) throw Error('DATA_FETCH ' + name);
+    const expected = manifest.files[name].bytes;
+    const bytes = new Uint8Array(expected);
+    let received = 0;
+    const report = (phase: 'download' | 'verify') =>
+      progress((loaded + received) / manifest.totalBytes, {
+        bytes: loaded + received,
+        total: manifest.totalBytes,
+        file: name,
+        phase,
+      });
+    report('download');
+    if (res.body) {
+      const reader = res.body.getReader();
+      try {
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          if (received + value.length > expected) {
+            await reader.cancel();
+            throw Error('DATA_HASH ' + name);
+          }
+          bytes.set(value, received);
+          received += value.length;
+          report('download');
+        }
+      } finally {
+        reader.releaseLock();
+      }
+    } else {
+      const raw = new Uint8Array(await res.arrayBuffer());
+      if (raw.length !== expected) throw Error('DATA_HASH ' + name);
+      bytes.set(raw);
+      received = raw.length;
+      report('download');
+    }
+    report('verify');
+    await new Promise((r) => setTimeout(r, 0));
+    const b = bytes.buffer;
+    if (received !== expected || bytesToHex(sha256(bytes)) !== manifest.files[name].sha256)
+      throw Error('DATA_HASH ' + name);
+    buffers[name] = b;
+    loaded += b.byteLength;
+    await new Promise((r) => setTimeout(r, 0));
+  }
+  const meta = JSON.parse(new TextDecoder().decode(buffers['metadata.json']));
+  const net: Network = {
+    n: manifest.neurons,
+    offsets: new Uint32Array(buffers['offsets.bin']),
+    targets: new Uint32Array(buffers['targets.bin']),
+    weights: new Int32Array(buffers['weights.bin']),
+    inputs: new Uint32Array(buffers['inputs.bin']),
+    positions: new Float32Array(buffers['positions.bin']),
+    ids: meta.ids,
+    labels: meta.labels,
+    classes: meta.classes,
+  };
+  validateNetwork(net);
+  return { net, manifest };
+}
+export function validateNetwork(g: Network) {
+  if (
+    !Number.isInteger(g.n) ||
+    g.n < 1 ||
+    g.offsets.length !== g.n + 1 ||
+    g.inputs.length !== g.n ||
+    g.positions.length !== g.n * 4 ||
+    g.ids.length !== g.n ||
+    g.labels.length !== g.n ||
+    g.classes.length !== g.n ||
+    g.offsets[0] !== 0 ||
+    g.offsets[g.n] !== g.targets.length ||
+    g.weights.length !== g.targets.length
+  )
+    throw Error('DATA_SHAPE');
+  for (let i = 0; i < g.n; i++) {
+    if (g.offsets[i] > g.offsets[i + 1] || !/^\d+$/.test(g.ids[i])) throw Error('DATA_NODE');
+  }
+  for (const t of g.targets) if (t >= g.n) throw Error('DATA_TARGET');
+  for (const v of g.positions) if (!Number.isFinite(v)) throw Error('DATA_POSITION');
+}

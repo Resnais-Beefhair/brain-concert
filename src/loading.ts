@@ -1,7 +1,46 @@
-import {t,type Key} from './i18n';import type {LoadProgress} from './data';
+import { t, type Key } from './i18n';
+import type { LoadProgress } from './data';
 // Symbolic graphic, not neural activity. Illumination follows received bytes.
-const dots=Array.from({length:72},(_,i)=>{const a=i*2.39996,r=Math.sqrt((i+.5)/72);return [160+Math.cos(a)*r*139,100+Math.sin(a)*r*78];});
-const graph=dots.map(([x,y],i)=>{const [xx,yy]=dots[(i*7+11)%dots.length];return `<path d="M${x},${y} Q160,100 ${xx},${yy}"/><circle cx="${x}" cy="${y}" r="2.5"/>`;}).join('');
-export const loadingMarkup=()=>`<div id="loadline" class="neural-loader"><div class="eyebrow" data-t="loadData">${t('loadData')}</div><div class="load-visual"><svg viewBox="0 0 320 200" aria-hidden="true"><defs><clipPath id="load-reveal"><rect id="load-mask" width="0" height="200"/></clipPath></defs><g class="load-unlit">${graph}</g><g class="load-lit" clip-path="url(#load-reveal)">${graph}</g></svg><div class="load-number"><span id="load-percent">0</span><span class="percent-sign">%</span></div></div><h2 data-t="loadTitle">${t('loadTitle')}</h2><p class="load-goal" data-t="loadGoal">${t('loadGoal')}</p><progress id="progress" value="0" max="1" data-label="loadData" aria-label="${t('loadData')}"></progress><div class="load-detail"><span id="loading" role="status" data-t="loading">${t('loading')}</span><span id="load-bytes">—</span></div><p class="load-hint" data-t="loadHint">${t('loadHint')}</p></div>`;
-let lastPaint=0;
-export function loadingProgress(fraction:number,detail?:LoadProgress){const now=performance.now();if(detail?.phase==='download'&&fraction<1&&now-lastPaint<80)return;lastPaint=now;const f=Math.max(0,Math.min(1,fraction));document.querySelector<HTMLProgressElement>('#progress')!.value=f;document.getElementById('load-percent')!.textContent=String(Math.floor(f*100));document.getElementById('load-mask')!.setAttribute('width',String(320*f));if(!detail)return;document.getElementById('load-bytes')!.textContent=`${(detail.bytes/1e6).toFixed(1)} / ${(detail.total/1e6).toFixed(1)} MB`;const key:Key=detail.phase==='verify'?'loadVerify':detail.file==='positions.bin'?'loadPositions':detail.file==='inputs.bin'?'loadInputs':detail.file==='metadata.json'?'loadLabels':detail.file==='offsets.bin'?'loadStructure':'loadConnections';const label=document.getElementById('loading')!;if(label.dataset.t!==key){label.dataset.t=key;label.textContent=t(key);}}
+const dots = Array.from({ length: 72 }, (_, i) => {
+  const a = i * 2.39996,
+    r = Math.sqrt((i + 0.5) / 72);
+  return [160 + Math.cos(a) * r * 139, 100 + Math.sin(a) * r * 78];
+});
+const graph = dots
+  .map(([x, y], i) => {
+    const [xx, yy] = dots[(i * 7 + 11) % dots.length];
+    return `<path d="M${x},${y} Q160,100 ${xx},${yy}"/><circle cx="${x}" cy="${y}" r="2.5"/>`;
+  })
+  .join('');
+export const loadingMarkup = () =>
+  `<div id="loadline" class="neural-loader"><div class="eyebrow" data-t="loadData">${t('loadData')}</div><div class="load-visual"><svg viewBox="0 0 320 200" aria-hidden="true"><defs><clipPath id="load-reveal"><rect id="load-mask" width="0" height="200"/></clipPath></defs><g class="load-unlit">${graph}</g><g class="load-lit" clip-path="url(#load-reveal)">${graph}</g></svg><div class="load-number"><span id="load-percent">0</span><span class="percent-sign">%</span></div></div><h2 data-t="loadTitle">${t('loadTitle')}</h2><p class="load-goal" data-t="loadGoal">${t('loadGoal')}</p><progress id="progress" value="0" max="1" data-label="loadData" aria-label="${t('loadData')}"></progress><div class="load-detail"><span id="loading" role="status" data-t="loading">${t('loading')}</span><span id="load-bytes">—</span></div><p class="load-hint" data-t="loadHint">${t('loadHint')}</p></div>`;
+let lastPaint = 0;
+export function loadingProgress(fraction: number, detail?: LoadProgress) {
+  const now = performance.now();
+  if (detail?.phase === 'download' && fraction < 1 && now - lastPaint < 80) return;
+  lastPaint = now;
+  const f = Math.max(0, Math.min(1, fraction));
+  document.querySelector<HTMLProgressElement>('#progress')!.value = f;
+  document.getElementById('load-percent')!.textContent = String(Math.floor(f * 100));
+  document.getElementById('load-mask')!.setAttribute('width', String(320 * f));
+  if (!detail) return;
+  document.getElementById('load-bytes')!.textContent =
+    `${(detail.bytes / 1e6).toFixed(1)} / ${(detail.total / 1e6).toFixed(1)} MB`;
+  const key: Key =
+    detail.phase === 'verify'
+      ? 'loadVerify'
+      : detail.file === 'positions.bin'
+        ? 'loadPositions'
+        : detail.file === 'inputs.bin'
+          ? 'loadInputs'
+          : detail.file === 'metadata.json'
+            ? 'loadLabels'
+            : detail.file === 'offsets.bin'
+              ? 'loadStructure'
+              : 'loadConnections';
+  const label = document.getElementById('loading')!;
+  if (label.dataset.t !== key) {
+    label.dataset.t = key;
+    label.textContent = t(key);
+  }
+}
