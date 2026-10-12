@@ -1,7 +1,11 @@
 // A small entry point keeps useful HTML visible if the application cannot load.
 let saved: string | null = null;
 try {
-  saved = localStorage.getItem('brain-concert-language');
+  saved =
+    localStorage.getItem('brain-concert-language') ??
+    (import.meta.env.VITE_BROWSER_LANGUAGE === 'true'
+      ? localStorage.getItem('aivokonsertti-language')
+      : null);
 } catch {}
 const lang =
   saved === 'fi' ||

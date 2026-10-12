@@ -300,7 +300,11 @@ export function chooseLanguage(
 }
 let saved: string | null = null;
 try {
-  saved = localStorage.getItem('brain-concert-language');
+  saved =
+    localStorage.getItem('brain-concert-language') ??
+    (import.meta.env.VITE_BROWSER_LANGUAGE === 'true'
+      ? localStorage.getItem('aivokonsertti-language')
+      : null);
 } catch {}
 export let language: Language = chooseLanguage(
   typeof navigator !== 'undefined' ? navigator.languages : [],
