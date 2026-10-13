@@ -30,7 +30,7 @@
   },
   "dependencies": {
     "@noble/hashes": "^2.4.0",
-    "three": "^0.180.0"
+    "three": "^0.186.1"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
